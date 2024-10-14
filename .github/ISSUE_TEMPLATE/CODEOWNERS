@@ -6,6 +6,8 @@
 /.github/ @moabu
 /community-edition-setup/ @devrimyatar @yuriyz @yurem @yuriyzz
 /oxAuth/ @yurem @yuriyz @yuriyzz
+/gluu-passport/ @kdhttps
+
 
 /jans-keycloak-integration/ @uprightech
 /jans-keycloak-link/ @shekhar16

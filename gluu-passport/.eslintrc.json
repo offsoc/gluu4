@@ -1,0 +1,21 @@
+{
+    "env": {
+        "commonjs": true,
+        "node": true,
+        "mocha": true,
+        "es2021": true
+      },
+    "extends": [
+        "standard"
+    ],
+    "plugins": [
+        "chai-friendly"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-unused-expressions": 0,
+        "chai-friendly/no-unused-expressions": 2
+    }
+}
