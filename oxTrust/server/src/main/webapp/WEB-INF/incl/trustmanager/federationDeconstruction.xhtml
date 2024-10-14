@@ -1,0 +1,70 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:outputStylesheet>
+        .left {
+            text-align: left;
+        }
+    </h:outputStylesheet>
+
+    <rich:popupPanel id="federationDeconstruction" onmaskclick="#{rich:component('federationDeconstruction')}.hide()" keepVisualState="true" autosized="true"
+        rendered="#{_trustRelationship.isFederation()}">
+        <f:facet name="header">
+            <h:outputText value="#{msgs['trustmanager.selectWhichMembers']}" />
+        </f:facet>
+
+        <f:facet name="controls">
+            <h:graphicImage value="/img/close.gif" styleClass="hidelink" style="cursor:pointer" onclick="#{rich:component('federationDeconstruction')}.hide(); return false;" />
+        </f:facet>
+
+        <h:panelGrid columns="1" id="federationDeconstructionMenu">
+            <h:form>
+                <h:panelGrid columns="3">
+                    <h:outputText value="Filter: " />
+                    <h:inputText value="#{federationDeconstructionAction.filterString}">
+
+                    </h:inputText>
+                    <a4j:commandButton value="Filter" action="#{federationDeconstructionAction.filterEntities()}" eventsQueue="trustQueue" render="federationDeconstructionMenu">
+                    </a4j:commandButton>
+                </h:panelGrid>
+            </h:form>
+
+            <h:form>
+                <rich:pickList id="federationDeconstructionSelection" value="#{federationDeconstructionAction.managedEntities}"
+                    listsHeigh="150" listWidth="230" sourceCaption="#{msgs['trustmanager.availableFederationMembers']}"
+                    targetCaption="#{msgs['trustmanager.membersSelectedForIndividualsConfiguration']}">
+
+                    <f:selectItems value="#{federationDeconstructionAction.bulkEntities}" var="item" itemLabel="#{item}" />
+
+                    <a4j:ajax event="change" render="federationDeconstructionConfigMenu" />
+                </rich:pickList>
+                <h:panelGroup id="federationDeconstructionConfigMenu">
+                    <h:panelGrid columns="2" rendered="#{federationDeconstructionAction.selectedTR ne null}">
+                                Display Name
+                                    <h:inputText value="#{federationDeconstructionAction.selectedTRDisplayName}" size="40" maxlength="60" />
+
+                
+                                Description
+                                    <h:inputTextarea value="#{federationDeconstructionAction.selectedTRDescription}" rows="3" size="40" maxlength="4000" />
+                    </h:panelGrid>
+
+                </h:panelGroup>
+                <div id="DeconstructionUpdate">
+                    <a4j:commandButton value="Save" action="#{federationDeconstructionAction.saveEntityList()}" render="attributes" eventsQueue="trustQueue"
+                        oncomplete="#{rich:component('federationDeconstruction')}.hide()">
+                    </a4j:commandButton>
+                    <a4j:commandButton value="Back" onclick="#{rich:component('federationDeconstruction')}.hide()" />
+                </div>
+            </h:form>
+        </h:panelGrid>
+
+    </rich:popupPanel>
+</ui:composition>

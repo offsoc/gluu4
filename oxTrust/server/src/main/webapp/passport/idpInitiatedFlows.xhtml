@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('uma', 'access')}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{passportIdpInitiatedAction.init}"
+			onPostback="false" />
+	</f:metadata>
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['passport.title']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />#{msgs['passport.idpInitiated']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/passport/idpInitiatedFlows.htm">#{msgs['passport.idpInitiated']}</a></li>
+			</ol>
+		</section>
+		<section class="content">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="box box-primary">
+						<h:form id="IdpInitiatedForm">
+							<input type='hidden' name='cid' value='#{conversation.id}' />
+							<div class="row"
+								style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
+								<h:panelGroup columns="1" width="100%" id="openIDConnectSection">
+									<b:panel title="#{msgs['passport.idpinitiated.oidc.title']}"
+									   rendered="#{!passportIdpInitiatedAction.showForm}"
+										look="primary" iconAwesome="fa-building" collapsible="false">
+										<div class="row">
+											<!-- First column-->
+											<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+												<ox:decorate
+													label="#{msgs['passport.idpinitiated.oidc.passport.authorizationEndpoint']}"
+													leftClass="col-sm-3" rightClass="col-sm-9">
+													<h:inputText
+														styleClass="form-control AuthorizationEndPointID"
+														style="width:100%" required="true"
+														value="#{passportIdpInitiatedAction.iiConfiguration.openidclient.authorizationEndpoint}"
+														id="AuthorizationEndPointID" rendered="true">
+														<rich:validator event="blur" />
+													</h:inputText>
+												</ox:decorate>
+												<ox:decorate
+													label="#{msgs['passport.idpinitiated.oidc.passport.acrValues']}"
+													leftClass="col-sm-3" rightClass="col-sm-9"
+													id="PostProfileEndpointID">
+													<h:selectOneMenu
+															styleClass="rounded form-control AcrValuesID"
+															value="#{passportIdpInitiatedAction.acrValue}"
+															required="true" id="AcrValuesID">
+														<f:selectItems
+																value="#{passportIdpInitiatedAction.authScripts}"
+																var="_acr" itemLabel="#{_acr}" />
+													</h:selectOneMenu>
+												</ox:decorate>
+											</div>
+											<!-- Second column-->
+											<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+												<b:form horizontal="true">
+													<b:formGroup>
+														<b:selectOneMenu id="ClientID"
+															value="#{passportIdpInitiatedAction.iiConfiguration.openidclient.clientId}"
+															select2="true" colMd="9" required="true" labelColMd="3"
+															label="#{msgs['passport.idpinitiated.oidc.passport.clientId']}">
+															<f:selectItem itemLabel="(Please select a client)"
+																itemValue="" />
+															<f:selectItems
+																value="#{passportIdpInitiatedAction.clients}"
+																var="client" itemValue="#{client.inum}"
+																itemLabel="#{client.displayName}" />
+														</b:selectOneMenu>
+													</b:formGroup>
+												</b:form>
+											</div>
+										</div>
+									</b:panel>
+									<b:panel id="AuthParametersListID"
+										rendered="#{!passportIdpInitiatedAction.showForm}"
+										title="#{msgs['passport.idpinitiated.authParams.title']}"
+										look="primary" iconAwesome="fa-building" collapsible="false">
+										<h:panelGroup columns="1" width="100%" id="AuthParamsSection">
+											<!-- AuthorizationParams List section-->
+											<div class="row" style="margin-left: 5px; margin-right: 5px;">
+												<a4j:commandButton styleClass="btn btn-primary addNewParam"
+													value="Add"
+													action="#{passportIdpInitiatedAction.activateForm}"
+													render="IdpInitiatedForm,AuthZParamFormId,AuthParametersListID"
+													execute="@this" />
+											</div>
+											<b:dataTable id="paramsTableId"
+												value="#{passportIdpInitiatedAction.authzParams}" var="c"
+												rendered="#{(passportIdpInitiatedAction.authzParams.size() gt 0)}"
+												select="true">
+												<b:dataTableColumn
+													label="#{msgs['passport.idpinitiated.authParams.provider']}">
+													<h:link includeViewParams="false"
+														outcome="/passport/editProvider"
+														value="#{passportIdpInitiatedAction.getProviderName(c.provider)}">
+														<f:param name="id" value="#{c.provider}" />
+													</h:link>
+												</b:dataTableColumn>
+												<b:dataTableColumn value="#{c.redirectUri}" order="asc"
+													label="#{msgs['passport.idpinitiated.authParams.redirectUri']}" />
+												<b:dataTableColumn label="Actions">
+													<b:commandButton
+														styleClass="btn btn-primary cancelAuthParamId"
+														value="" style="margin-left: 5px;" iconAwesome="edit"
+														action="#{passportIdpInitiatedAction.editAuthParam(c)}"
+														render="IdpInitiatedForm,AuthZParamFormId" execute="@this" />
+													<b:commandButton
+														styleClass="btn btn-danger deleteParamId" value=""
+														style="margin-left: 5px;" iconAwesome="minus"
+														action="#{passportIdpInitiatedAction.removeAuthParam(c)}"
+														render="IdpInitiatedForm" execute="@this" />
+												</b:dataTableColumn>
+											</b:dataTable>
+										</h:panelGroup>
+									</b:panel>
+								</h:panelGroup>
+								<h:panelGroup rendered="#{!passportIdpInitiatedAction.showForm}">
+									<div id="updateButtons"
+										style="margin-left: 15px; margin-bottom: 10px;">
+										<h:commandButton action="#{passportIdpInitiatedAction.save}"
+											style="margin-left:5px;" styleClass="btn btn-primary"
+											value="Update" />
+										<h:commandButton action="#{passportIdpInitiatedAction.cancel}"
+											immediate="true" style="margin-left:5px;"
+											styleClass="btn btn-primary" value="#{msgs['client.cancel']}" />
+									</div>
+								</h:panelGroup>
+							</div>
+						</h:form>
+						<h:form id="AuthZParamFormId" prependId="false">
+							<div class="row"
+								style="margin-left: 10px; margin-right: 10px; margin-top: 10px;">
+								<b:panel title="OpenID Connect Authorization request param"
+									rendered="#{passportIdpInitiatedAction.showForm}"
+									look="primary">
+									<h:panelGroup id="ParamFormID"
+										rendered="#{passportIdpInitiatedAction.showForm}">
+										<div class="row">
+											<!-- First column-->
+											<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+												<b:form horizontal="true">
+													<b:formGroup>
+														<b:selectOneMenu id="ProviderID"
+															value="#{passportIdpInitiatedAction.authzParam.provider}"
+															select2="true" colMd="9" required="true" labelColMd="3"
+															label="#{msgs['passport.idpinitiated.authParams.provider']}">
+															<f:selectItem itemLabel="Please select a provider"
+																itemValue="" />
+															<f:selectItems
+																value="#{passportIdpInitiatedAction.providers}"
+																var="provider" itemValue="#{provider.id}"
+																itemLabel="#{provider.displayName}" />
+														</b:selectOneMenu>
+													</b:formGroup>
+													<b:formGroup>
+														<b:inputText id="RedirectURI" colMd="9" labelColMd="3"
+															value="#{passportIdpInitiatedAction.authzParam.redirectUri}"
+															pt:type="url" pt:placeholder="Enter a valid url"
+															styleClass="rounded form-control RedirectURI"
+															required="true"
+															label="#{msgs['passport.idpinitiated.authParams.redirectUri']}" />
+													</b:formGroup>
+												</b:form>
+											</div>
+											<!-- Second column-->
+											<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+												<ox:decorate id="responseTypes"
+													label="#{msgs['passport.idpinitiated.authParams.responseType']}">
+													<h:panelGroup id="selectedResponseTypesId">
+														<h:panelGroup>
+															<a4j:repeat
+																value="#{passportIdpInitiatedAction.responseTypes}"
+																rowKeyVar="_responseTypeIdx" var="_responseType"
+																iterationStatusVar="loop">
+																<div class="row-fluid">
+																	<div class="#{(loop.index % 2 == 0) ?'odd':'even'}">
+																		<h:outputText value="#{_responseType}" />
+																		<h:outputText value="&#160;" />
+																		<div class="span6 pull-right">
+																			<a4j:commandLink
+																				styleClass="glyphicon glyphicon-remove"
+																				style="margin-top:-20px;"
+																				action="#{passportIdpInitiatedAction.removeResponseType(_responseType)}"
+																				execute="@this" render="selectedResponseTypesId"
+																				eventsQueue="providerQueue">
+																			</a4j:commandLink>
+																		</div>
+																	</div>
+																</div>
+																<br />
+															</a4j:repeat>
+															<p:spacer height="16" />
+															<a4j:commandButton
+																styleClass="btn btn-primary AddResponseTypeButton"
+																style="margin-top:5px"
+																value="#{msgs['clientForm.addResponseType']}"
+																oncomplete="#{rich:component('responseType:selectEntityModalPanel')}.show();"
+																execute="@this" eventsQueue="clientQueue" />
+														</h:panelGroup>
+													</h:panelGroup>
+												</ox:decorate>
+												<hr
+													style="height: 1px; background: green; border-color: green; border-width: 0px;"></hr>
+												<ox:decorate id="scopes"
+													label="#{msgs['passport.idpinitiated.authParams.scope']}">
+													<h:panelGroup id="selectedScopesId">
+														<h:panelGroup>
+															<a4j:repeat value="#{passportIdpInitiatedAction.scopes}"
+																rowKeyVar="_scopeIdx" var="_scope"
+																iterationStatusVar="loop">
+																<div class="row-fluid">
+																	<div class="#{(loop.index % 2 == 0) ?'odd':'even'}">
+																		<h:outputText value="#{_scope}" />
+																		<h:outputText value="&#160;" />
+																		<div class="span6 pull-right">
+																			<a4j:commandLink
+																				styleClass="glyphicon glyphicon-remove"
+																				style="margin-top:-20px;"
+																				action="#{passportIdpInitiatedAction.removeScope(_scope)}"
+																				execute="@this" render="selectedScopesId"
+																				eventsQueue="clientQueue">
+																			</a4j:commandLink>
+																		</div>
+																	</div>
+																</div>
+																<br />
+															</a4j:repeat>
+															<p:spacer height="16" />
+															<a4j:commandButton
+																styleClass="btn btn-primary AddScopeButton"
+																style="margin-top:5px"
+																value="#{msgs['clientForm.addScope']}"
+																oncomplete="#{rich:component('scope:selectEntityModalPanel')}.show();"
+																execute="@this" eventsQueue="providerQueue" />
+														</h:panelGroup>
+													</h:panelGroup>
+												</ox:decorate>
+											</div>
+										</div>
+
+										<div class="row" style="margin-left: 5px; margin-right: 5px;">
+											<b:panel title="Additional params" look="primary">
+												<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+													<ox:simpleMapProperties label="Add" hideLabel="true"
+														showRemoveDialogue="true"
+														properties="#{passportIdpInitiatedAction.options}"
+														propertiesAction="#{passportIdpInitiatedAction}"
+														hideValue="true" />
+												</div>
+											</b:panel>
+										</div>
+										<!-- Form footer-->
+										<div class="row"
+											style="margin-left: 50px; margin-right: 5px; margin-bottom: 20px;">
+											<div id="updateButtons">
+												<a4j:commandButton
+													styleClass="btn btn-primary saveAuthParamId"
+													onclick="submit();" value="Save"
+													style="margin-left: 5px;"
+													action="#{passportIdpInitiatedAction.addAuthParam}"
+													render="AuthZParamFormId" execute="@this" />
+												<a4j:commandButton
+													styleClass="btn btn-primary cancelAuthParamId"
+													value="#{msgs['client.cancel']}" style="margin-left: 5px;"
+													action="#{passportIdpInitiatedAction.cancelParamAdd}"
+													render="AuthZParamFormId,IdpInitiatedForm" execute="@this" />
+											</div>
+										</div>
+									</h:panelGroup>
+								</b:panel>
+							</div>
+						</h:form>
+					</div>
+				</div>
+			</div>
+			<ox:selectSelectableEntityDialog
+				acceptMethod="#{passportIdpInitiatedAction.acceptSelectResponseTypes}"
+				cancelMethod="#{passportIdpInitiatedAction.cancelSelectResponseTypes}"
+				displayNameProperty="entity" displaySearchForm="false"
+				id="responseType" label="#{msgs['client.addResponseType']}"
+				nameProperty="entity" render="selectedResponseTypesId"
+				searchMethod="#{passportIdpInitiatedAction.searchAvailableResponseTypes}"
+				searchResult="#{passportIdpInitiatedAction.availableResponseTypes}" />
+			<ox:selectSelectableEntityDialog
+				acceptMethod="#{passportIdpInitiatedAction.acceptSelectScopes()}"
+				cancelMethod="#{passportIdpInitiatedAction.cancelSelectScopes()}"
+				displayNameProperty="entity" displaySearchForm="false" id="scope"
+				label="#{msgs['client.scopes']}" nameProperty="entity"
+				render="selectedScopesId"
+				searchMethod="#{passportIdpInitiatedAction.searchAvailableScopes}"
+				searchResult="#{passportIdpInitiatedAction.availableScopes}" />
+		</section>
+	</ui:define>
+</ui:composition>

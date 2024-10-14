@@ -1,0 +1,122 @@
+{
+    "orgInum":"${config.organization.inum}",
+    "orgIname":"${config.organization.iname}",
+    "orgSupportEmail":"${config.organization.supportEmail}",
+
+    "baseDN":"o=gluu",
+
+    "baseEndpoint":"${config.host.schema}://${config.host.idp_name}/identity/restv1",
+
+    "idpUrl":"${config.host.schema}://${config.host.idp_name}",
+    "applicationUrl":"${config.host.schema}://${config.host.idp_name}",
+
+    "keystorePath":"${base.root}/etc/certs/${config.organization.inum-fn}-java.jks",
+    "keystorePassword":"${config.host.keystore_password}",
+
+    "personObjectClassTypes":[
+        "gluuCustomPerson",
+        "eduPerson",
+        "gluuPerson"
+    ],
+    "personObjectClassDisplayNames":[
+        "gluuCustomPerson",
+        "eduPerson",
+        "gluuPerson"
+    ],
+
+    "allowPersonModification":true,
+    "updateStatus":true,
+
+    "clientAssociationAttribute":"inum",
+
+    "personCustomObjectClass":"gluuCustomPerson",
+
+    "contactObjectClassTypes":[
+        "gluuBasicPersona",
+        "gluuExtraPersona",
+        "gluuPersona"
+    ],
+    "contactObjectClassDisplayNames":[
+        "Basic",
+        "Extended",
+        "Network"
+    ],
+
+    "photoRepositoryRootDir":"${base.root}/var/photos",
+    "photoRepositoryThumbWidth":300,
+    "photoRepositoryThumbHeight":300,
+    "photoRepositoryCountLeveles":3,
+    "photoRepositoryCountFoldersPerLevel":20,
+
+    "shibboleth3FederationRootDir":"${base.root}/opt/shibboleth-federation",
+
+
+    "spMetadataPath":"${base.root}/opt/shibboleth-idp/metadata",
+
+    "logoLocation":"${base.root}/var/photos",
+
+    "gluuSpAttributes":[
+        "uid",
+        "mail",
+        "sn",
+        "givenName"
+    ],
+
+    "configGeneration":false,
+    "ignoreValidation":false,
+
+    "idpSecurityCert":"${base.root}/etc/certs/${config.organization.inum-fn}-shib.crt",
+    "idpSecurityKey":"${base.root}/etc/certs/${config.organization.inum-fn}-shib.key",
+    "idpSecurityKeyPassword":"${config.host.keystore_password}",
+    "gluuSpCert":"${base.root}/etc/certs/${config.organization.inum-fn}-shib.crt",
+
+    "ldifStore":"${base.root}/var/ox/oxtrust/removed",
+
+    "caCertsLocation":"${base.root}/usr/java/latest/jre/lib/security/cacerts",
+    "caCertsPassphrase":null,
+
+    "certDir":"${base.root}/etc/certs/",
+    "tempCertDir":"${base.root}/etc/certs/temp",
+
+    "clusteredInums":[
+
+    ],
+
+    "servicesRestartTrigger":"${base.root}/opt/gluu/essential_files/trigger_restart_of_services_delete_me_to_do_so",
+
+    "oxAuthIssuer":"${config.host.schema}://${config.host.idp_name}",
+    "oxAuthSectorIdentifierUrl":"${config.host.schema}://${config.host.idp_name}/oxauth/sectoridentifier",
+
+    "oxAuthClientId":"${config.host.oxauth_client_id}",
+    "oxAuthClientPassword":"${config.host.oxauth_client_password}",
+    "oxAuthClientScope":"openid+profile+address+email+user_name",
+
+    "loginRedirectUrl":"${config.host.schema}://${config.host.idp_name}${config.oxtrust.web_context}/authcode",
+    "logoutRedirectUrl":"${config.host.schema}://${config.host.idp_name}${config.oxtrust.web_context}/finishlogout",
+
+    "umaIssuer":"${config.uma.issuer}",
+    "scimUmaClientId":"${config.uma.client_id}",
+    "scimUmaClientKeyId":"${config.uma.client_key_id}",
+    "scimUmaResourceId":"${config.uma.resource_id}",
+    "scimUmaScope":"${config.uma.scope}",
+
+    "cssLocation":"/identity/stylesheet",
+    "jsLocation":"/identity/js",
+
+    "rptConnectionPoolUseConnectionPooling":false,
+    "rptConnectionPoolMaxTotal":200,
+    "rptConnectionPoolDefaultMaxPerRoute":20,
+    "rptConnectionPoolValidateAfterInactivity":10,
+    "rptConnectionPoolCustomKeepAliveTimeout":5,
+
+    "scimTestMode":false,
+    "oxIncommonFlag":false,
+
+    "shibbolethVersion":"",
+    "shibboleth3IdpRootDir":"",
+    "shibboleth3SpConfDir":"",
+    "organizationName":"",
+    "idp3SigningCert":"/etc/certs/idp-signing.crt",
+    "idp3EncryptionCert":"/etc/certs/idp-encryption.crt",
+    "passIdTokenHintToLogoutRedirectUri": false
+}

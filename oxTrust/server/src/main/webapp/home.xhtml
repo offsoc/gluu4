@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('#{identity.loggedIn}')}" />
+		<f:viewAction action="#{conversationService.endConversation}" />
+		<f:viewAction action="#{homeAction.init}" onPostback="false" />
+	</f:metadata>
+	<ui:define name="body">
+		<section class="content-header">
+			<ui:param name="welcomeTitle"
+				value="#{organizationService.getOrganizationCustomMessage('welcomeTitle')}" />
+			<ui:fragment
+				rendered="#{not empty welcomeTitle and not permissionService.hasPermission('configuration', 'access')}">
+				<h:panelGroup layout="block"
+					style="margin-left:10%;text-align: center;">
+					<h:outputText escape="false" value="#{welcomeTitle}" />
+					<h:outputText escape="false"
+						value="#{configurationService.getVersion()}" />
+				</h:panelGroup>
+			</ui:fragment>
+			<ui:fragment rendered="#{empty welcomeTitle}">
+				<h:form rendered="#{updateChecker.isHasUpdate()}">
+					<b:poll interval="3000" update="updateNotification" />
+					<div
+						style="background: #337ab7; width: 100%; text-align: center; border-radius: 10px; color: white; padding: 2px;">
+						<h:outputText id="updateNotification"
+							value="#{updateChecker.getUpdateMessage()}" />
+					</div>
+				</h:form>
+				<h1>
+					<h:outputFormat value="#{msgs['home.welcome']}">
+						<f:param value="#{configurationService.getVersion()}" />
+					</h:outputFormat>
+				</h1>
+			</ui:fragment>
+		</section>
+		<section class="content">
+			<ui:fragment
+				rendered="#{permissionService.hasPermission('configuration', 'access')}">
+				<div class="row">
+					<div class="col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box">
+							<span class="info-box-icon bg-green"> <i
+								class="fa  fa-bar-chart-o" style="line-height: 2em !important;" />
+							</span>
+							<div class="info-box-content">
+
+								<ui:param name="_configuration"
+									value="#{homeAction.getConfiguration()}" />
+								<ui:param name="_stat" value="#{homeAction.getServerStat()}" />
+								<span class="info-box-text">#{msgs['home.freeMemory']}</span>
+								<h:outputText styleClass="info-box-number"
+									value="#{_stat.freeMemory}" />
+								<span> </span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box">
+							<span class="info-box-icon bg-red"> <i class="fa fa-tasks"
+								style="line-height: 2em !important;" />
+							</span>
+							<div class="info-box-content">
+								<span class="info-box-text">#{msgs['home.freeDiskSpace']}</span>
+								<h:outputText styleClass="info-box-number"
+									value="#{_stat.freeDiskSpace}" />
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box">
+							<span class="info-box-icon bg-yellow"> <i
+								class="fa fa-power-off" style="line-height: 2em !important;" />
+							</span>
+							<div class="info-box-content">
+								<span class="info-box-text">#{msgs['home.systemUptime']}</span>
+								<h:outputText styleClass="info-box-number" value="#{_stat.systemUptime}" />
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6 col-xs-12">
+						<div class="info-box">
+							<span class="info-box-icon bg-yellow"> <i
+								class="fa  fa-cloud" style="line-height: 2em !important;" />
+							</span>
+							<div class="info-box-content">
+								<span class="info-box-text">#{msgs['home.ipAddress']}</span>
+								<h:outputText styleClass="info-box-number"
+									value="#{_stat.ipAddress}" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="display: none;">
+					<h:inputTextarea id="authenticationChartJson"
+						value="#{homeAction.authenticationChartJson}" />
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="box">
+							<div class="box-header with-border">
+								<h5 class="box-title">#{msgs['home.authenticationRequests']}</h5>
+								<h3 class="description-header text-center">#{msgs['home.lastDaysStatistics']}</h3>
+								<div class="box-tools pull-right">
+									<button class="btn btn-box-tool" data-widget="collapse">
+										<i class="fa fa-minus" />
+									</button>
+									<div class="btn-group">
+										<button class="btn btn-box-tool dropdown-toggle"
+											data-toggle="dropdown">
+											<i class="fa fa-wrench" />
+										</button>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">#{msgs['home.action']}</a></li>
+											<li><a href="#">#{msgs['home.anotherAction']}</a></li>
+											<li><a href="#">#{msgs['home.somethingElseHere']}</a></li>
+											<li class="divider" />
+											<li><a href="#">#{msgs['home.separatedLink']}</a></li>
+										</ul>
+									</div>
+									<button class="btn btn-box-tool" data-widget="remove">
+										<i class="fa fa-times" />
+									</button>
+								</div>
+							</div>
+							<div class="box-body text-center">
+								<div class="row">
+									<div>
+										<p class="text-center">
+											<strong />
+										</p>
+										<h:outputLabel styleClass="text-center"
+											style="font-style:bold;color: #00BE79; text-align:center;font-size: 300%; margin-top: 10%; font-family:Times New Roman;"
+											rendered="#{homeAction.authenticationChartJson eq null}">The metrics report is currently disabled.</h:outputLabel>
+										<div class="chart-responsive">
+											<!-- Authentication Requests Chart Canvas -->
+											<canvas height="185" id="authenticationRequestsChart"
+												style="width: 703px; height: 185px;" width="703" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- ./box-body -->
+							<div class="box-footer">
+								<div class="row">
+									<div class="col-sm-3 col-xs-6">
+										<div class="description-block border-right">
+											<h5 class="description-header">#{homeAction.authenticationChartDto.yearlyRequest}</h5>
+											<span class="description-text">#{msgs['home.totalYearlyRequests']}</span>
+										</div>
+									</div>
+									<div class="col-sm-3 col-xs-6">
+										<div class="description-block border-right">
+											<h5 class="description-header">#{homeAction.authenticationChartDto.totalRequest}</h5>
+											<span class="description-text">#{msgs['home.totalWeeklyRequests']}</span>
+										</div>
+									</div>
+									<div class="col-sm-3 col-xs-6">
+										<div class="description-block border-right">
+											<h5 class="description-header">#{homeAction.authenticationChartDto.totalSuccess}</h5>
+											<span class="description-text">#{msgs['home.totalSuccessfulLogin']}</span>
+										</div>
+									</div>
+									<div class="col-sm-3 col-xs-6">
+										<div class="description-block border-right">
+											<h5 class="description-header">#{homeAction.authenticationChartDto.totalFailure}</h5>
+											<span class="description-text">#{msgs['home.totalFailedLogin']}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+		</section>
+		<!-- Scripts -->
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/dist/js/jquery-ui-1.13.2.min.js"
+			type="text/javascript" />
+		<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+		<script>
+			$.widget.bridge('uibutton', $.ui.button);
+		</script>
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/dist/js/raphael-min.js" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/morris/morris.min.js"
+			type="text/javascript" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/knob/jquery.knob.js"
+			type="text/javascript" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/datepicker/bootstrap-datepicker.js"
+			type="text/javascript" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/iCheck/icheck.min.js"
+			type="text/javascript" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/slimScroll/jquery.slimscroll.min.js"
+			type="text/javascript" />
+		<script
+			src="#{oxTrustConfigurationService.cssLocation}/../theme/plugins/chartjs/Chart.min.js"
+			type="text/javascript" />
+		<script src="#{request.contextPath}/resources/js/dashboard.js"
+			type="text/javascript" />
+	</ui:define>
+</ui:composition>

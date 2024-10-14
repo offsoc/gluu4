@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:b="http://bootsfaces.net/ui"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('configuration', 'access')}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{configureLogViewerAction.init}"
+			onPostback="false" />
+	</f:metadata>
+
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['logViewer.configuration']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />
+					#{msgs['logViewer.configureLogViewer']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/logviewer/configureLogViewer.htm">#{msgs['logViewer.configureLogViewer']}</a>
+				</li>
+			</ol>
+		</section>
+		<section class="content">
+			<div id="formArea">
+				<h:form id="logViewerForm">
+					<f:validateBean>
+						<b:panel title="LogViewer Configuration" look="primary"
+							collapsible="false" iconAwesome="fa-ge">
+							<div style="display: inline-block; width: 100% !important;">
+								<h:panelGroup>
+									<div class="row"
+										style="padding: 5px; margin-bottom: 5px; margin-left: 0px">
+										<ox:decorate forId="oxTrustLogConfigLocation"
+											label="oxTrust External log4j location">
+											<h:inputText id="oxTrustLogConfigLocation"
+												class="form-control oxTrustLogConfigLocation"
+												style="margin-right:5px;margin-bottom:10px;width:100%;float:left;"
+												value="#{configureLogViewerAction.oxTrustLogConfigLocation}"></h:inputText>
+										</ox:decorate>
+									</div>
+									<div class="row"
+										style="padding: 5px; margin-bottom: 5px; margin-left: 0px">
+										<ox:decorate forId="oxTrustLogConfigLocation"
+											label="oxAuth External log4j location">
+											<h:inputText id="oxAuthLogConfigLocation"
+												class="form-control oxAuthLogConfigLocation"
+												style="margin-right:5px;margin-bottom:10px;width:100%;float:left;"
+												value="#{configureLogViewerAction.oxAuthLogConfigLocation}"></h:inputText>
+										</ox:decorate>
+									</div>
+								</h:panelGroup>
+							</div>
+							<div class="box-footer">
+								<div id="updateButtons">
+									<h:commandButton action="#{configureLogViewerAction.update}"
+										styleClass="btn btn-primary addLogButtonClass"
+										value="#{msgs['logViewer.update']}" />
+									<h:commandButton action="#{configureLogViewerAction.cancel}"
+										immediate="true" style="margin-left:5px"
+										styleClass="btn btn-primary"
+										value="#{msgs['logViewer.cancel']}" />
+								</div>
+							</div>
+						</b:panel>
+					</f:validateBean>
+				</h:form>
+			</div>
+		</section>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,251 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+	<h:form>
+		<div class="row" style="padding: 5px;">
+			<b:panel title="Attribute Form" look="primary" iconAwesome="fa-list"
+				collapsible="false">
+				<h:panelGroup columns="1" width="100%">
+					<ox:decorate id="name" label="#{msgs['attribute.name']}">
+						<h:inputText styleClass="form-control" value="#{_attribute.name}"
+							label="#{msgs['attribute.name']}" size="30" maxlength="30"
+							validator="gluuAttributeValidator" required="true" id="nameId"
+							rendered="#{_new}" />
+						<b:message />
+						<h:outputText value="#{_attribute.name}" rendered="#{not _new}" />
+					</ox:decorate>
+					<ox:decorate id="saml1Uri" label="#{msgs['attribute.samlURI']}">
+						<h:inputText styleClass="form-control registerSAML1Field"
+							value="#{_attribute.saml1Uri}" size="30" maxlength="256"
+							id="saml1Id" />
+					</ox:decorate>
+					<ox:decorate id="saml2Uri" label="#{msgs['attribute.saml2URI']}">
+						<h:inputText styleClass="form-control registerSAML2Field"
+							value="#{_attribute.saml2Uri}" size="30" maxlength="256"
+							id="saml2Id" />
+					</ox:decorate>
+					<ox:decorate id="displayName"
+						label="#{msgs['attribute.displayName']}">
+						<h:inputText styleClass="form-control registerDisplayNameField"
+							value="#{_attribute.displayName}"
+							label="#{msgs['attribute.displayName']}" size="30" maxlength="60"
+							required="true" id="displayNameId"
+							validator="gluuAttributeValidator"
+							rendered="#{_attributeAction.canEdit()}" />
+						<b:message />
+						<h:outputText value="#{_attribute.displayName}"
+							rendered="#{not _attributeAction.canEdit()}" />
+					</ox:decorate>
+					<ox:decorate id="dataType" label="#{msgs['attribute.type']}">
+						<h:selectOneMenu styleClass="form-control rounded chooseTypeField"
+							value="#{_attribute.dataType}" label="#{msgs['attribute.type']}"
+							required="true" id="dataTypeId"
+							validator="gluuAttributeValidator"
+							rendered="#{_attributeAction.canEdit()}">
+							<f:selectItem noSelectionOption="true" itemLabel="Data type" />
+							<f:selectItems value="#{_attributeAction.getDataTypes()}" var="_type"
+								itemLabel="#{_type.displayName}" />
+							<f:converter converterId="org.gluu.jsf2.converter.EnumConverter" />
+						</h:selectOneMenu>
+						<b:message />
+						<h:outputText value="#{_attribute.dataType.value}"
+							rendered="#{not _attributeAction.canEdit()}" />
+					</ox:decorate>
+					<ox:decorate id="editType" rendered="#{_attributeAction.canEdit()}"
+						label="#{msgs['attribute.editType']}">
+						<h:selectManyListbox styleClass="form-control editTypeField"
+							value="#{_attribute.editType}" id="editTypeId"
+							rendered="#{_attributeAction.canEdit()}">
+							<f:selectItems value="#{_attributeAction.getAttributeEditTypes()}"
+								var="_type" itemLabel="#{_type.displayName}"
+								itemValue="#{_type}" />
+						</h:selectManyListbox>
+						<ui:fragment rendered="#{not _attributeAction.canEdit()}">
+							<a4j:repeat value="#{_attribute.editType}" var="_type"
+								rowKeyVar="_idx">
+								<h:outputText value="#{_type.displayName}" />
+								<h:outputText value=", "
+									rendered="#{_idx lt fn:length(_attribute.editType) - 1}" />
+							</a4j:repeat>
+						</ui:fragment>
+					</ox:decorate>
+					<ox:decorate id="viewType" rendered="#{_attributeAction.canEdit()}"
+						label="#{msgs['attribute.viewType']}">
+						<h:selectManyListbox styleClass="form-control viewTypeField"
+							value="#{_attribute.viewType}" id="viewTypeId"
+							rendered="#{_attributeAction.canEdit()}">
+							<f:selectItems value="#{_attributeAction.getAttributeEditTypes()}"
+								var="_type" itemLabel="#{_type.displayName}"
+								itemValue="#{_type}" />
+						</h:selectManyListbox>
+						<ui:fragment rendered="#{not _attributeAction.canEdit()}">
+							<a4j:repeat value="#{_attribute.viewType}" var="_type"
+								rowKeyVar="_idx">
+								<h:outputText value="#{_type.displayName}" />
+								<h:outputText value=", "
+									rendered="#{_idx lt fn:length(_attribute.viewType) - 1}" />
+							</a4j:repeat>
+						</ui:fragment>
+					</ox:decorate>
+					<ox:decorate id="usageType" label="#{msgs['attribute.usageType']}">
+						<h:selectManyListbox styleClass="form-control usageTypeField"
+							value="#{_attribute.usageType}" required="false" id="usageTypeId"
+							rendered="#{_attributeAction.canEdit()}">
+							<f:selectItem noSelectionOption="true" itemLabel="Not defined" />
+							<f:selectItems value="#{_attributeAction.getAttributeUsageTypes()}"
+								var="_type" itemLabel="#{_type.displayName}"
+								itemValue="#{_type}" />
+						</h:selectManyListbox>
+						<ui:fragment rendered="#{not _attributeAction.canEdit()}">
+							<a4j:repeat value="#{_attribute.usageType}" var="_type"
+								rowKeyVar="_idx">
+								<h:outputText value="#{_type.displayName}" />
+								<h:outputText value=", "
+									rendered="#{_idx lt fn:length(_attribute.usageType) - 1}" />
+							</a4j:repeat>
+						</ui:fragment>
+					</ox:decorate>
+					<ox:decorate id="multivalued"
+						label="#{msgs['attribute.multivalued']}">
+						<h:selectBooleanCheckbox
+							value="#{_attribute.oxMultiValuedAttribute}" id="multivaluedId"
+							styleClass="form-control multivaluedField"
+							disabled="#{not _attributeAction.canEdit() or _attributeAction.persistenceType eq 'sql'}">
+							<a4j:ajax event="click" render="validation" />
+						</h:selectBooleanCheckbox>
+					</ox:decorate>
+					<ox:decorate
+						template="/WEB-INF/incl/layout/#{_attributeAction.canEdit() ? 'edit' : 'view'}.xhtml"
+						id="claimName" label="#{msgs['attribute.oxAuthClaimName']}">
+						<h:inputText styleClass="form-control claimNameField"
+							value="#{_attribute.oxAuthClaimName}" size="30" maxlength="60"
+							id="claimNameId" rendered="#{_attributeAction.canEdit()}" />
+						<h:outputText value="#{_attribute.oxAuthClaimName}"
+							rendered="#{not _attributeAction.canEdit()}" />
+					</ox:decorate>
+					<ox:decorate id="scimAttribute"
+						rendered="#{_attributeAction.isScimAttribute(_attribute.name)}"
+						label="#{msgs['attribute.scimAttribute']}">
+						<h:outputText
+							value="#{_attributeAction.getScimValue(_attribute.name)}"
+							id="scimAttributeId" styleClass="form-control scimAttributeField">
+						</h:outputText>
+					</ox:decorate>
+					<ox:decorate id="scimExtendedAttribute"
+						rendered="#{not _attributeAction.isScimAttribute(_attribute.name)}"
+						label="Include in SCIM extension">
+						<h:selectBooleanCheckbox
+							value="#{_attribute.oxSCIMCustomAttribute}"
+							id="scimExtendedAttributeId"
+							styleClass="form-control scimExtendedAttributeField"
+							disabled="#{not _attributeAction.canEdit()}">
+							<a4j:ajax event="click" render="validation" />
+						</h:selectBooleanCheckbox>
+						<h:outputText style="margin-left:5px;"
+							value="Signals whether this attribute is part of the SCIM user extension or not." />
+					</ox:decorate>
+					<ox:decorate id="description"
+						label="#{msgs['attribute.description']}">
+						<h:inputTextarea
+							styleClass="form-control rounded setAttributeDescriptionField"
+							value="#{_attribute.description}"
+							validator="gluuAttributeValidator"
+							label="#{msgs['attribute.description']}" rows="3" size="40"
+							maxlength="4000" required="true" id="descriptionId"
+							disabled="#{not _attributeAction.canEdit()}" />
+						<b:message />
+					</ox:decorate>
+					<ox:decorate id="validationToggle"
+						label="#{msgs['attribute.enableCustomValidation']}">
+						<h:selectBooleanCheckbox
+							value="#{_attributeAction.validationToggle}"
+							id="validationToggleId" styleClass="enableCustomValidationValue"
+							disabled="#{not _attributeAction.canEdit()}">
+							<a4j:ajax event="click" render="validation" />
+						</h:selectBooleanCheckbox>
+					</ox:decorate>
+					<h:panelGroup id="validation">
+						<h:panelGroup rendered="#{_attributeAction.validationToggle}">
+							<ox:decorate
+								template="/WEB-INF/incl/layout/#{_attributeAction.canEdit() ? 'edit' : 'view'}.xhtml"
+								id="validationRE" label="#{msgs['attribute.validationRegExp']}">
+								<h:inputText styleClass="form-control setValidationRegExpField"
+									value="#{_attribute.attributeValidation.regexp}" size="30"
+									maxlength="256" id="validationREId"
+									disabled="#{not _attributeAction.canEdit()}" />
+							</ox:decorate>
+						</h:panelGroup>
+					</h:panelGroup>
+					<ox:decorate
+						template="/WEB-INF/incl/layout/#{_attributeAction.canEdit() ? 'edit' : 'view'}.xhtml"
+						id="tooltipToggle" label="#{msgs['attribute.enableTooltip']} ">
+						<h:selectBooleanCheckbox value="#{_attributeAction.tooltipToggle}"
+							id="tooltipToggleId" styleClass="enableTooltipField"
+							disabled="#{not _attributeAction.canEdit()}">
+							<a4j:ajax event="click" render="tooltip" />
+						</h:selectBooleanCheckbox>
+					</ox:decorate>
+					<h:panelGroup id="tooltip">
+						<h:panelGroup rendered="#{_attributeAction.tooltipToggle}">
+							<ox:decorate id="tooltipText"
+								label="#{msgs['attribute.tooltipText']}">
+								<h:inputText styleClass="form-control tooltipTextField"
+									value="#{_attribute.gluuTooltip}" size="30" maxlength="256"
+									required="true" id="tooltipTextId"
+									disabled="#{not _attributeAction.canEdit()}" />
+							</ox:decorate>
+						</h:panelGroup>
+					</h:panelGroup>
+					<ox:decorate id="minlength"
+						label="#{msgs['attribute.minimumLength']}">
+						<h:inputText styleClass="form-control minimumLengthField"
+							value="#{_attribute.attributeValidation.minLength}"
+							converter="javax.faces.Integer" size="40" maxlength="4000"
+							id="minlengthid" disabled="#{not _attributeAction.canEdit()}">
+							<f:validateLongRange minimum="1" maximum="10000" />
+						</h:inputText>
+					</ox:decorate>
+					<ox:decorate id="maxlength"
+						label="#{msgs['attribute.maximumLength']}">
+						<h:inputText styleClass="form-control maximumLengthField"
+							value="#{_attribute.attributeValidation.maxLength}"
+							converter="javax.faces.Integer" size="40" maxlength="4000"
+							id="maxlengthid" disabled="#{not _attributeAction.canEdit()}">
+							<f:validateLongRange minimum="1" maximum="10000" />
+						</h:inputText>
+					</ox:decorate>
+					<ox:decorate id="regex" label="#{msgs['attribute.regexPattern']}">
+						<h:inputText styleClass="form-control regexPatternField"
+							value="#{_attribute.attributeValidation.regexp}" size="40"
+							maxlength="4000" id="regexid"
+							disabled="#{not _attributeAction.canEdit()}" />
+					</ox:decorate>
+
+					<ox:decorate id="status" label="#{msgs['attribute.status']}">
+						<h:selectOneMenu styleClass="form-control rounded statusValue"
+							value="#{_attribute.status}" label="#{msgs['attribute.status']}"
+							required="true" id="statusId"
+							rendered="#{_attributeAction.canEdit()}">
+							<f:selectItems
+								value="#{organizationService.activeInactiveStatuses}"
+								var="_type" itemLabel="#{_type.displayName}" />
+							<f:converter converterId="org.gluu.jsf2.converter.EnumConverter" />
+						</h:selectOneMenu>
+						<h:outputText value="#{_attribute.status}"
+							rendered="#{not _attributeAction.canEdit()}" />
+					</ox:decorate>
+				</h:panelGroup>
+				<div class="box-footer">
+					<ui:insert name="controlButttons" />
+				</div>
+			</b:panel>
+		</div>
+	</h:form>
+</ui:composition>

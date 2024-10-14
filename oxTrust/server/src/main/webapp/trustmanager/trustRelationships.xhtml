@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('trust', 'access')}" />
+		<f:viewParam name="searchPattern"
+			value="#{trustRelationshipInventoryAction.searchPattern}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{trustRelationshipInventoryAction.start}"
+			if="#{trustRelationshipInventoryAction.trustedSpList == null}"
+			onPostback="false" />
+	</f:metadata>
+
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['trustmanager.saml']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />
+					#{msgs['trustmanager.trustRelationships']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/trustmanager/trustRelationships.htm">#{msgs['trustmanager.trustRelationships']}</a>
+				</li>
+			</ol>
+		</section>
+
+		<section class="content">
+			<!-- BODY TAB PANEL STARTS FROM HERE -->
+			<div class="row" id="formArea">
+				<div class="col-xs-12 col-md-12"
+					style="margin-left: 10px; margin-right: 10px;">
+					<b:panel title="Trust Relationships List" look="primary"
+						iconAwesome="fa-list" collapsible="false">
+						<b:link style-class="btn btn-primary" icon="plus"
+							outcome="/trustmanager/addTrustRelationship"
+							value="#{msgs['trustmanager.addRelationship']}" propagation="none"
+							includeViewParams="false" />
+						<p:spacer height="50" />
+						<a4j:region>
+							<h:form>
+								<a4j:poll action="#{trustRelationshipInventoryAction.search()}"
+									enabled="true" id="poll" interval="30000"
+									render="poll, relationshipstable" />
+							</h:form>
+						</a4j:region>
+						<div class="row">
+							<h:form>
+								<ox:decorate hideLabel="true" id="searchPattern">
+									<div style="width: 100%; float: left; margin-left: 10px;">
+										<h:inputText
+											alt="Search parameters for client like inum,displayName"
+											id="searchPatternId" maxlength="30" size="30"
+											style="width:60%; float:left;"
+											styleClass="form-control searchBox"
+											value="#{trustRelationshipInventoryAction.searchPattern}" />
+										<b:commandButton
+											action="#{trustRelationshipInventoryAction.search}"
+											style="float:left;margin-left :3px;"
+											styleClass="btn btn-primary searchButton"
+											value="#{msgs['trustmanager.search']}" iconAwesome="fa-search" />
+									</div>
+								</ox:decorate>
+							</h:form>
+						</div>
+						<div class="row">
+							<div class="box-body">
+								<h:form id="trustRelationsshipList">
+									<div class="row" style="padding: 10px;">
+										<b:dataTable id="relationshipstable"
+											style="text-align:center; width:100%;"
+											rendered="#{trustRelationshipInventoryAction.trustedSpList.size() gt 0}"
+											value="#{trustRelationshipInventoryAction.trustedSpList}"
+											var="tsps" print="true" excel="true" csv="true" pdf="true"
+											select="true" responsive="true">
+											<b:dataTableColumn label="#{msgs['trustmanager.community']}"
+												order="asc">
+												<h:link includeViewParams="false"
+													outcome="/trustmanager/updateTrustRelationship"
+													value="#{tsps.displayName}">
+													<f:param name="inum" value="#{tsps.inum}" />
+												</h:link>
+											</b:dataTableColumn>
+											<b:dataTableColumn
+												label="#{msgs['trustmanager.attributesPublished']}">
+												<ox:attributeList value="#{tsps.releasedCustomAttributes}" />
+											</b:dataTableColumn>
+											<b:dataTableColumn>
+											<f:facet name="header">
+												<ul
+													style="margin-bottom: 0; list-style-type: none; padding-left: 0">
+													<li>Relation</li>
+													<li>Type</li>
+												</ul>
+											</f:facet>
+											#{trustRelationshipInventoryAction.getRelationshipType(tsps)}
+											</b:dataTableColumn>
+											<b:dataTableColumn width="5%">
+												<f:facet name="header">
+													<ul
+														style="margin-bottom: 0; list-style-type: none; padding-left: 0">
+														<li>Validation</li>
+														<li>Status</li>
+													</ul>
+												</f:facet>
+												<b:label
+													text="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps)}"
+													rendered="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps) eq 'Scheduled'}"
+													severity="warning" />
+												<b:label
+													text="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps)}"
+													rendered="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps) eq 'In Progress'}"
+													severity="info" />
+												<b:label
+													text="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps)}"
+													rendered="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps) eq 'Failed'}"
+													severity="danger" />
+												<b:label
+													text="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps)}"
+													rendered="#{metadataValidationTimer.getValidationStatus(tsps.spMetaDataFN,tsps) eq 'Success'}"
+													severity="success" />
+											</b:dataTableColumn>
+											<b:dataTableColumn label="#{msgs['trustmanager.status']}" width="5%">
+												<b:label rendered="#{tsps.status.displayName eq 'Active'}"
+													text="#{tsps.status.displayName}" severity="primary" />
+												<b:label rendered="#{tsps.status.displayName eq 'Inactive'}"
+													text="#{tsps.status.displayName}" severity="danger" />
+											</b:dataTableColumn>
+											<b:dataTableColumn value="#{tsps.description}"
+												label="#{msgs['trustmanager.description']}" />
+										</b:dataTable>
+									</div>
+								</h:form>
+							</div>
+						</div>
+					</b:panel>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+</ui:composition>

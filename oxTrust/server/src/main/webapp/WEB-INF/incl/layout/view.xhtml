@@ -1,0 +1,19 @@
+<ui:composition  xmlns="http://www.w3.org/1999/xhtml"
+                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                 xmlns:h="http://xmlns.jcp.org/jsf/html"
+                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+                 
+                 <div class="col-sm-12" style="padding:5px;margin-bottom: 5px;">
+        <h:panelGroup layout="block" rendered="#{not _hideLabel}">
+               <h:panelGroup styleClass="nameText col-sm-3">
+                   <ui:insert name="label"/>
+               </h:panelGroup>
+        </h:panelGroup>
+
+        <div class="col-sm-9 prop">
+            <span class="value">
+                <ui:insert/>
+            </span>
+        </div>
+        </div>
+</ui:composition>

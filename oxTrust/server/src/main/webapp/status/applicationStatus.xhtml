@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('configuration', 'access')}" />
+		<f:viewAction
+			action="#{permissionService.hasPermission('configuration', 'access')}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{configurationStatusAction.init}"
+			onPostback="false" />
+	</f:metadata>
+
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['configurationStatus.configuration']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />
+					#{msgs['configurationStatus.serverStatus']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/status/applicationStatus.htm">#{msgs['configurationStatus.serverStatus']}</a>
+				</li>
+			</ol>
+		</section>
+		<section class="content">
+			<h:panelGroup id="formArea" layout="block">
+				<b:panel title="#{msgs['configurationStatus.serverStatus']}"
+					look="primary" iconAwesome="fa-gear" collapsible="false">
+					<div style="display: inline-block; width: 95% !important;">
+						<ui:param name="_configuration"
+							value="#{homeAction.getConfiguration()}" />
+						<ui:param name="_stat" value="#{homeAction.getServerStat()}" />
+						<div class="row" style="margin-left: 5px; margin-right: 5px;">
+							<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+								<h:panelGrid border="0" cellpadding="0" cellspacing="0"
+									columns="1" id="statusTable1" width="100%">
+									<ox:decorate label="#{msgs['configurationStatus.hostName']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<b:label styleClass="hostnameValueBox"
+											text="#{configurationStatusAction.getHostName(_configuration.hostname)}"
+											severity="primary" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.ipAddress']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<b:label styleClass="ipAddressValueBox"
+											text="#{_stat.ipAddress}" severity="success" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.systemUptime']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="systemUptimeValueBox"
+											value="#{_stat.systemUptime}" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.lastUpdate']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="lastUpdateValueBox"
+											value="#{_configuration.lastUpdate}">
+											<f:convertDateTime pattern="MMM. d yyyy hh:mm a" />
+										</h:outputText>
+									</ox:decorate>
+									<ox:decorate
+										label="#{msgs['configurationStatus.freeDiskSpace']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="freeDiskSpaceValueBox"
+											value="#{_stat.freeDiskSpace}" />
+									</ox:decorate>
+								</h:panelGrid>
+							</div>
+							<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+								<h:panelGrid border="0" cellpadding="0" cellspacing="0"
+									columns="1" id="statusTable2" width="100%">
+									<ox:decorate
+										label="#{msgs['configurationStatus.pollingInterval']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="pollingIntervalValueBox"
+											value="60 seconds" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.personCount']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="personCountValueBox"
+											value="#{_stat.personCount}" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.groupCount']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="groupCountValueBox"
+											value="#{_stat.groupCount}" />
+									</ox:decorate>
+									<ox:decorate label="#{msgs['configurationStatus.freeMemory']}"
+										leftClass="col-sm-6" rightClass="col-sm-6">
+										<h:outputText styleClass="freeMemoryValueBox"
+											value="#{_stat.freeMemory}" />
+									</ox:decorate>
+								</h:panelGrid>
+							</div>
+						</div>
+					</div>
+				</b:panel>
+			</h:panelGroup>			
+			<h:panelGroup id="ServerStatsId" layout="block">
+				<b:panel title="MAU Stats"
+					look="primary" iconAwesome="fa-gear" collapsible="true">
+					<div style="display: inline-block; width: 50% !important;">
+						<div class="row" style="margin-left: 5px; margin-right: 5px;">
+							<b:dataTable id="scopesListId" paginated="false"
+								style="text-align:left;width:100%;"
+								value="#{configurationStatusAction.getStatsData()}" var="entry">
+								
+								<b:dataTableColumn label="Period" 
+									value="#{entry.key}">
+								</b:dataTableColumn>
+								<b:dataTableColumn  label="Stats"
+									value="#{entry.value}">
+								</b:dataTableColumn>
+								
+							</b:dataTable>
+						</div>
+					</div>
+				</b:panel>
+			</h:panelGroup>
+		</section>
+	</ui:define>
+</ui:composition>

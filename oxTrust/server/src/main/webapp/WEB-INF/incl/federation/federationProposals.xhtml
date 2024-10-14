@@ -1,0 +1,49 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div id="trustRelationships">
+        <h:panelGrid columns="1" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <h:link includeViewParams="false" outcome="/federation/hosted/addFederation" styleClass="addAttribute" value="#{msgs['federation.addFederation']}" />
+
+            <p:spacer height="16" />
+
+            <h:form id="trustRelationsshipList">
+                <ui:fragment rendered="#{federationProposalsInventoryAction.proposalsList.size() eq 0}">
+                    <p:spacer height="30" />
+                    <h:outputText value="#{msgs['federation.noTrustRelationshipsFound']}" />
+                </ui:fragment>
+
+                <p:dataTable id="relationshipstable" value="#{federationProposalsInventoryAction.proposalsList}" rows="20" styleClass="data sortable" var="tsps"
+                    rendered="#{federationProposalsInventoryAction.proposalsList.size() gt 0}">
+                    <p:column sortBy="#{tsps.displayName}">
+                        <f:facet name="header">#{msgs['federation.community']}</f:facet>
+                        <h:link includeViewParams="false" outcome="/federation/proposal/viewProposal" value="#{tsps.displayName}">
+                            <f:param name="inum" value="#{tsps.inum}" />
+                        </h:link>
+                    </p:column>
+                    <p:column sortBy="#{tsps.description}">
+                        <f:facet name="header">#{msgs['federation.description']}</f:facet>
+                        <h:outputText value="#{tsps.description}" />
+                    </p:column>
+                    <p:column sortBy="#{tsps.isFederation()}">
+                        <f:facet name="header">#{msgs['federation.relationshipType']}</f:facet>
+                        <h:outputText value="#{tsps.isFederation() ? 'federation' : (trustService.getTrustContainerFederation(tsps) ne null ? 'site federated with '.concat(trustService.getTrustContainerFederation(tsps).displayName) : 'site')}" />
+                    </p:column>
+                    <p:column sortBy="#{tsps.status.value}">
+                        <f:facet name="header">#{msgs['federation.status']}</f:facet>
+                        <h:outputText value="#{tsps.status.displayName}" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </h:panelGrid>
+    </div>
+</ui:composition>

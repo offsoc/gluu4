@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets" template="/WEB-INF/incl/layout/newtemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{permissionService.requestPermission('trust', 'access')}" />
+    	<f:viewParam name="inum" value="#{updateTrustRelationshipAction.inum}" />
+        <f:viewAction action="#{conversationService.initConversation}" />
+        <f:viewAction action="#{updateTrustRelationshipAction.add}" onPostback="false"/>
+    </f:metadata>
+    <ui:define name="body">
+        <section class="content">
+            <ui:decorate template="/WEB-INF/incl/trustmanager/trustForm.xhtml">
+                <ui:param name="_trustRelationship" value="#{updateTrustRelationshipAction.trustRelationship}"/>
+                <ui:param name="_customAttributes"
+                          value="#{updateTrustRelationshipAction.trustRelationship.releasedCustomAttributes}"/>
+                <ui:param name="_customAttributeAction" value="#{customAttributeAction}"/>
+                <ui:param name="_trustRelationshipAction" value="#{updateTrustRelationshipAction}"/>
+                <ui:param name="_new" value="true"/>
+
+                <ui:define name="controlButttons">
+                    <div class="box-footer">
+                        <div style="width: 100%;height: 30px;">
+                            <div id="updateButtons" style="float: left;width: 150px;">
+                                <h:commandButton action="#{updateTrustRelationshipAction.save}"
+                                                 styleClass="btn btn-primary" value="   #{msgs['trustmanager.add']}   "/>
+                                <h:commandButton action="#{updateTrustRelationshipAction.cancel}" immediate="true"
+                                                 style="margin-left:5px;" styleClass="btn btn-primary"
+                                                 value="   #{msgs['trustmanager.cancel']}  "/>
+                            </div>
+                        </div>
+                    </div>
+                </ui:define>
+            </ui:decorate>
+            <ox:createMetadataDialog generateMethod="#{updateTrustRelationshipAction.generateMetadata}"
+                                       id="createMetadata" label="Generate SP Metadata"
+                                       logoutUri="#{updateTrustRelationshipAction.trustRelationship.spLogoutURL}"
+                                       metadataUri="#{updateTrustRelationshipAction.trustRelationship.spMetaDataURL}"
+                                       uri="#{updateTrustRelationshipAction.trustRelationship.url}"
+                                       spEntityID="#{updateTrustRelationshipAction.saml2Settings.spEntityIdSub}"
+                                       spAssertionConsumerServiceUrl="#{updateTrustRelationshipAction.spAssertionConsumerServiceUrlStr}"
+                                       spSingleLogoutServiceUrl="#{updateTrustRelationshipAction.spSingleLogoutServiceUrlStr}"                                       
+                                       spX509cert="#{updateTrustRelationshipAction.spX509certStr}"
+                                       spNameIDFormat="#{updateTrustRelationshipAction.saml2Settings.spNameIDFormatSub}"
+                                       authnRequestsSigned="#{updateTrustRelationshipAction.saml2Settings.authnRequestsSigned}"
+                                       wantAssertionsSigned="#{updateTrustRelationshipAction.saml2Settings.wantAssertionsSigned}"
+                                       orgName="#{updateTrustRelationshipAction.orgName}"
+                                       orgDisplayName="#{updateTrustRelationshipAction.orgDisplayName}"
+                                       orgUrl="#{updateTrustRelationshipAction.orgUrl}"
+                                       />
+
+
+        </section>
+    </ui:define>
+</ui:composition>

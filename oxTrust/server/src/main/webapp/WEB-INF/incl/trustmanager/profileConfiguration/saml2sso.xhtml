@@ -1,0 +1,143 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext">
+	<div class="row"
+		style="padding-left: 5px; padding-right: 5px; max-height: 300px; overflow-x: scroll;">
+		<h4 style="text-align: center;">#{msgs['trustmanager.saml2SSOProfileHelp']}</h4>
+		<h6 style="text-align: center;">#{msgs['trustmanager.thisProfileConfiguration']}</h6>
+		<br></br>
+		<div class="col-sm-12 col-md-12 col-lg-12">
+			<ox:decorate id="assertionLifetimeCheckBox"
+				label="#{msgs['trustmanager.assertionLifetime']}"
+				leftClass="col-sm-6" rightClass="col-sm-6">
+				<p:spinner id="assertionLifetimeCheckBoxValue"
+					styleClass="rounded assertionLifetimeCheckBoxValue"
+					value="#{_ssoProfile.assertionLifetime}" min="60" max="2147483647"
+					stepFactor="300000" style=" margin-left:15px;width:94%;" />
+			</ox:decorate>
+			<ox:decorate id="signResponseCheckBox"
+				label="#{msgs['trustmanager.signResponses']}" leftClass="col-sm-6"
+				rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.signResponses}">
+					<f:selectItem itemLabel="#{msgs['trustmanager.never']}"
+						itemValue="never" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.conditional']}"
+						itemValue="conditional" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.always']}"
+						itemValue="always" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<ox:decorate id="signAssertionCheckBox"
+				label="#{msgs['trustmanager.signAssertions']}" leftClass="col-sm-6"
+				rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.signAssertions}">
+					<f:selectItem itemLabel="#{msgs['trustmanager.never']}"
+						itemValue="never" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.conditional']}"
+						itemValue="conditional" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.always']}"
+						itemValue="always" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<ox:decorate id="signRequestCheckBox"
+				label="#{msgs['trustmanager.signRequests']}" leftClass="col-sm-6"
+				rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.signRequests}">
+					<f:selectItem itemLabel="#{msgs['trustmanager.never']}"
+						itemValue="never" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.conditional']}"
+						itemValue="conditional" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.always']}"
+						itemValue="always" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<ox:decorate id="encryptAssertionsCheckBox"
+				label="#{msgs['trustmanager.encryptAssertions']}"
+				leftClass="col-sm-6" rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.encryptAssertions}">
+					<f:selectItem itemLabel="#{msgs['trustmanager.never']}"
+						itemValue="never" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.conditional']}"
+						itemValue="conditional" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.always']}"
+						itemValue="always" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<ox:decorate id="encryptNamedIdCheckBox"
+				label="#{msgs['trustmanager.encryptNameIds']}" leftClass="col-sm-6"
+				rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.encryptNameIds}">
+					<f:selectItem itemLabel="#{msgs['trustmanager.never']}"
+						itemValue="never" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.conditional']}"
+						itemValue="conditional" />
+					<f:selectItem itemLabel="#{msgs['trustmanager.always']}"
+						itemValue="always" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<ox:decorate id="defaultAuthMethodCheckBox"
+				label="Default Authn Methods" leftClass="col-sm-6"
+				rightClass="col-sm-6">
+				<b:selectOneMenu small-screen="12"
+					value="#{_ssoProfile.defaultAuthenticationMethod}">
+					<f:selectItem itemLabel="none" itemValue="none" />
+					<f:selectItems itemLabel="#{item}" itemValue="#{item}" var="item"
+						value="#{_relyingPartyAction.getAllAcrs()}" />
+				</b:selectOneMenu>
+			</ox:decorate>
+			<b:formGroup>
+				<div class="col-sm-6 col-md-6 col-lg-6">
+					<h:outputText
+						style="color:black;font-weight: bold;font-size: 14px;"
+						value="#{msgs['trustmanager.includeAttributeStatement']}" />
+				</div>
+				<div class="col-sm-6 col-md-6 col-lg-6">
+					<h:selectBooleanCheckbox style="float:right;"
+						value="#{_ssoProfile.includeAttributeStatement}" />
+				</div>
+			</b:formGroup>
+			<b:formGroup>
+				<div class="col-sm-6 col-md-6 col-lg-6">
+					<h:outputText
+						style="color:black;font-weight: bold;font-size: 14px;"
+						value="Support Unspecified NameIdFormat?" />
+				</div>
+				<div class="col-sm-6 col-md-6 col-lg-6">
+					<h:selectBooleanCheckbox
+						id="unspecifiedNameIDFormatSupportedCheckBox" immediate="true"
+						value="#{_relyingPartyAction.unspecifiedNameIDFormatSupported}"
+						valueChangeListener="#{_relyingPartyAction.handleUnspecifiedNameIDFormatSupportedCheckBox}"
+						style="margin-left:10px;float:right;">
+						<a4j:ajax event="click" render="samlNameIdFormatPickList"
+							execute="@this" limitRender="true" />
+					</h:selectBooleanCheckbox>
+				</div>
+			</b:formGroup>
+		</div>
+		<b:formGroup styleClass="NameIDPickingList">
+			<rich:pickList id="samlNameIdFormatPickList" orderable="true"
+				sourceCaption="Available NamedId Formats" listWidth="330"
+				targetCaption="Selected NamedId Formats(in order of preference)"
+				value="#{_ssoProfile.nameIDFormatPrecedenceList}">
+				<f:selectItems
+					itemLabel="#{nameIdFormat.substring(19,nameIdFormat.length())}"
+					itemValue="#{nameIdFormat}"
+					value="#{_relyingPartyAction.getSupportedNameIdFormats()}"
+					var="nameIdFormat" />
+			</rich:pickList>
+		</b:formGroup>
+	</div>
+</ui:composition>

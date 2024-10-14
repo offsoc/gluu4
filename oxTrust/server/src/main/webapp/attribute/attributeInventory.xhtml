@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('attribute', 'access')}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{attributeInventoryAction.start}"
+			if="#{attributeInventoryAction.attributeList == null}"
+			onPostback="false" />
+	</f:metadata>
+	<ui:define name="body">
+		<h:outputStylesheet>
+        .tableHeader {
+          background:#00BE79;
+          color:white;
+          margin-left: 10px;
+          margin-right: 10px;
+          background-color:#00BE79 !important;
+          border: 5px solid #00BE79 !important;
+          text-align:center;
+          border-radius: 5px solid #00BE79 !important;
+        }
+        thead{
+           border-radius: 5px solid #00BE79 !important;
+        }
+      </h:outputStylesheet>
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['attribute.configuration']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />
+					#{msgs['attribute.attributes']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/attribute/attributeInventory.htm">
+						#{msgs['attribute.attributes']}</a></li>
+			</ol>
+		</section>
+		<section class="content">
+			<b:panel title="Attributes" look="primary" iconAwesome="fa-building"
+				collapsible="false">
+				<div id="formArea">
+					<h:panelGroup border="0" cellpadding="0" cellspacing="0"
+						columns="1" width="100%">
+						<h:form id="attributesFormId">
+							<h:link id="register" includeViewParams="false"
+								outcome="/attribute/addAttribute" style="padding:6px;"
+								styleClass="label label-success"
+								value="#{msgs['attribute.registerAttribute']}" />
+							<ui:fragment rendered="#{attributeInventoryAction.showInactive}">
+								<a4j:commandLink
+									action="#{attributeInventoryAction.toggleShowInactive}"
+									render="attributesFormId" style="margin-left:5px;padding:6px;"
+									styleClass="label label-success"
+									value="#{msgs['attribute.showOnlyActiveAttributes']}" />
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not attributeInventoryAction.showInactive}">
+								<a4j:commandLink
+									action="#{attributeInventoryAction.toggleShowInactive}"
+									render="attributesFormId" style="margin-left:5px;padding:6px;"
+									styleClass="label label-success showAllAttributesButton"
+									value="#{msgs['attribute.showAllAttributes']}" />
+							</ui:fragment>
+							<div style="padding-top: 20px">
+								<h:panelGroup id="attributeInventory">
+									<div class="row">
+										<h:form>
+											<div class="row" style="width: 100%;">
+												<div class="col-md-6 col-md-offset-2" id="searchPattern">
+													<h:inputText
+														alt="search parameters for group like uid,email"
+														id="searchPatternId" maxlength="30" size="30"
+														style="float: left;width: 100%;"
+														styleClass="searchParameters searchAttributeTextArea form-control"
+														value="#{attributeInventoryAction.searchPattern}" />
+												</div>
+												<div class="col-md-4" id="searchPattern">
+													<b:commandButton iconAwesome="fa-search"
+														action="#{attributeInventoryAction.search}"
+														class="btn btn-primary searchAttributeButton"
+														style="float:left;" value="#{msgs['group.search']}" />
+												</div>
+											</div>
+										</h:form>
+									</div>
+									<div class="row" style="padding:5px">
+										<b:dataTable id="attributesListId"
+											rendered="#{attributeInventoryAction.attributeList.size() gt 0}"
+											sortMode="single"
+											value="#{attributeInventoryAction.attributeList}" var="attr"
+											print="true" excel="true" csv="true" pdf="true" select="true">
+											<b:dataTableColumn label="#{msgs['attribute.displayName']}">
+												<h:link includeViewParams="false"
+													outcome="/attribute/updateAttribute"
+													value="#{attr.displayName}">
+													<f:param name="inum" value="#{attr.inum}" />
+												</h:link>
+											</b:dataTableColumn>
+											<b:dataTableColumn value="#{attr.name}"
+												label="#{msgs['attribute.name']}" />
+											<b:dataTableColumn value="#{attr.origin}"
+												label="#{msgs['attribute.origin']}" />
+											<b:dataTableColumn value="#{attr.description}"
+												label="#{msgs['attribute.description']}" />
+											<b:dataTableColumn label="#{msgs['attribute.status']}">
+												<b:label rendered="#{attr.status eq 'ACTIVE'}"
+													text="#{attr.status}" severity="primary" />
+												<b:label rendered="#{attr.status eq 'INACTIVE'}"
+													text="#{attr.status}" severity="danger" />
+											</b:dataTableColumn>
+										</b:dataTable>
+									</div>
+								</h:panelGroup>
+							</div>
+						</h:form>
+					</h:panelGroup>
+				</div>
+			</b:panel>
+		</section>
+	</ui:define>
+</ui:composition>

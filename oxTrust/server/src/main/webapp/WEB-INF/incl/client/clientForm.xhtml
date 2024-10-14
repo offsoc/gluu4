@@ -1,0 +1,1478 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox">
+	<style type="text/css">
+.odd {
+	background-color: #ddd;
+}
+
+.even {
+	background-color: #eee;
+}
+
+.tooltip {
+	background-color: #{richSkin.generalBackgroundColor
+}
+
+}
+.tooltip-text {
+	width: 350px;
+	height: 80px;
+	cursor: arrow;
+	border-width: 2px;
+	text-align: center;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.tooltipData {
+	font-weight: bold;
+}
+
+.ui-widget-header {
+	background: none !important;
+	repeat-x: top left #005000 !important;
+	position: relative !important;
+	padding-left: 10px !important;
+	cursor: move !important;
+	padding: 6px !important;
+	background-color: #337AB7 !important;
+	width: 100% !important;
+	border-top-right-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+	color: white !important;
+}
+</style>
+	<h:outputScript>
+		function showClientSecret(){
+		   var secretField = document.getElementById("clientForm:clientSecret:clientSecretId1");
+		   secretField.setAttribute('type','text'); 
+		   document.getElementById("clientForm:clientSecret:hidePassword").style.display = 'block';
+		   document.getElementById("clientForm:clientSecret:viewPassword").style.display = 'none';
+		}
+		
+		function hideClientSecret(){
+		   var secretField = document.getElementById("clientForm:clientSecret:clientSecretId1");
+		   secretField.setAttribute('type','password'); 
+		   document.getElementById("clientForm:clientSecret:hidePassword").style.display = 'none';
+		   document.getElementById("clientForm:clientSecret:viewPassword").style.display = 'block';
+		}
+		
+		function takeFocus(x){
+		   x.focus();
+		}
+    </h:outputScript>
+
+	<h:form id="clientForm">
+		<b:panel title="Client Form" look="primary" collapsible="false"
+			iconAwesome="fa-building" style="margin:10px;">
+			<input type='hidden' name='cid' value='#{conversation.id}' />
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-lg-12" style="margin-top: 5px;">
+					<div class="box-header">
+						<a4j:commandButton
+							styleClass="btn btn-primary showOIDCSummaryButton"
+							style="float: right; margin-right:1%; width:180px; border:none !important;"
+							rendered="#{not _new}"
+							value="#{msgs['clientForm.clientSummary']}"
+							onclick="#{rich:component('summary:clientSummary')}.show();"
+							eventsQueue="clientQueue" />
+						<a4j:commandButton ajaxSingle="true" eventsQueue="clientQueue"
+							onclick="#{rich:component('deleteConfirmation:acceptRemovalModalPanel')}.show();"
+							rendered="#{not _new}"
+							styleClass="btn btn-primary deleteOIDCButton"
+							style="float: right; margin-right:1%; width:150px; border:none !important; background: #d62728 !important; background-color: #d62728 !important;"
+							value="#{msgs['client.delete']}" />
+					</div>
+					<div class="nav-tabs-custom"
+						style="margin-bottom: 0px; overflow: auto;">
+						<ul class="nav nav-tabs" id="oidctab">
+							<li><a href="#standardSettings"
+								class="StandardTab active" data-bs-toggle="tab">#{msgs['clientForm.tab.standard']}</a></li>
+							<li><a href="#token" class="Token"
+								data-bs-toggle="tab">#{msgs['clientForm.tab.token']}</a></li>
+							<li><a href="#logout" class="Logout"
+								data-bs-toggle="tab">Logout</a></li>
+							<li><a href="#softwareinfo" class="softwareinfo"
+								data-bs-toggle="tab">Software Info</a></li>
+							<li><a href="#ciba" class="ciba"
+								data-bs-toggle="tab">CIBA / UMA</a></li>
+							<li><a href="#encryptionsigningSettings"
+								class="EncryptionTab" data-bs-toggle="tab">#{msgs['clientForm.tab.encryption']}</a></li>
+							<!-- <li><a href="#clientAttributes" class="ClientAttributesTab"
+								data-bs-toggle="tab">Client Attributes</a></li>-->
+							<li><a href="#advancedSettings" class="AdvancedTab"
+								data-bs-toggle="tab">#{msgs['clientForm.tab.advanced']}</a></li>
+							<li><a href="#customScripts" class="CustomScriptsTab"
+								data-bs-toggle="tab">#{msgs['clientForm.tab.customscripts']}</a></li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active box box-primary"
+								id="standardSettings">
+								<h:panelGroup columns="1" width="100%">
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="inum" rendered="true"
+												label="#{msgs['clientForm.inum']}" leftClass="col-sm-3"
+												rightClass="col-sm-9">
+												<h:outputText style="background: #ff6e40; color:white;"
+													styleClass="form-control rounded clientGeneratedInum"
+													value="#{_new ? 'Will be generated after adding the new client.' : _client.inum}" />
+											</ox:decorate>
+										</div>
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate label="#{msgs['clientForm.disabled']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectBooleanCheckbox value="#{_client.disabled}"
+													styleClass="disbaleClientClass rounded" />
+											</ox:decorate>
+										</div>
+									</div>
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="clientSecret"
+												label="#{msgs['clientForm.clientSecret']}"
+												leftClass="col-sm-3" rightClass="col-sm-6">
+												<h:inputText
+													styleClass="form-control togglefield clientSecretTextBox"
+													style="background: #7f0000 !important; color:white !important;"
+													value="#{_client.oxAuthClientSecret}" redisplay="true"
+													defaultLabel="click to enter Client Secret" maxlength="60"
+													id="clientSecretId1" />
+												<h:graphicImage value="/img/eye.png" id="viewPassword"
+													style="margin-top:-35px; margin-right: -55px; float:right;"
+													onmouseover="takeFocus(this);"
+													onclick="showClientSecret(); return false;" />
+												<h:graphicImage value="/img/eye-hidden.png"
+													style="margin-top:-35px; margin-right: -55px; float:right; display: none;"
+													id="hidePassword" onmouseover="takeFocus(this);"
+													onclick="hideClientSecret(); return false;" />
+											</ox:decorate>
+										</div>
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<a4j:commandLink render="clientSecretId1" rendered="#{_new}"
+												styleClass="btn btn-primary generateClientSecretButton"
+												value="Generate Client Secret" style="margin-left: 10px;"
+												action="#{_clientAction.generatePassword()}" execute="@this"
+												oncomplete="return valuesDisplay(this);" />
+											<a4j:commandLink rendered="#{_new}"
+												style="margin-left: 10px;"
+												styleClass="btn btn-primary lockClientSecretField"
+												value="Lock Secret Field" />
+											<a4j:commandButton rendered="#{not _new}"
+												style="margin-left:15px;"
+												onclick="#{rich:component('clientPassword:changePasswordModalPanel')}.show();"
+												styleClass="btn btn-primary changeClientSecretButton"
+												value="#{msgs['client.changeClientSecret']}" />
+
+										</div>
+									</div>
+									<!-- First row -->
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="displayName"
+												label="#{msgs['clientForm.clientName']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<h:inputText value="#{_client.displayName}"
+													styleClass="form-control clientNameTextBox"
+													requiredMessage="Please Enter the Client Name"
+													required="true" id="displayNameId" />
+											</ox:decorate>
+											<ox:decorate id="description"
+												label="#{msgs['clientForm.clientDescription']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<h:inputTextarea value="#{_client.description}" rows="3"
+													styleClass="col-sm-12 form-control rounded clientDescriptionTextArea"
+													cols="80" maxlength="250" id="descriptionId" />
+											</ox:decorate>
+											<ox:decorate id="sectorIdentifierUri" label="Sector URI"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<h:inputText id="sectorIdentifierUriId"
+													value="#{_client.sectorIdentifierUri}" style="width:100%"
+													styleClass="form-control sectorIdentifierUriId" />
+											</ox:decorate>
+											
+											<h:panelGroup id="secretid">
+												<b:panel title="#{msgs['clientForm.redirectLoginURIs']}"
+													id="redirectLoginUrls" look="primary">
+													<h:panelGroup id="selectedLoginURIsId">
+														<a4j:repeat value="#{_clientAction.loginUris}"
+															rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+															<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																style="overflow-x: scroll;">
+																<h:outputText value="#{empty _uri ? _uri : _uri}" />
+																<h:outputText value="&#160;" />
+																<div>
+																	<a4j:commandLink
+																		styleClass="glyphicon glyphicon-remove"
+																		style="margin-top:-20px; float:right;"
+																		action="#{_clientAction.removeLoginURI(_uri)}"
+																		execute="@this" render="selectedLoginURIsId"
+																		eventsQueue="clientQueue">
+																	</a4j:commandLink>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddRedirectLoginUriButton"
+															style="margin-top: 5px;"
+															value="#{msgs['clientForm.addLoginReiderctURI']}"
+															oncomplete="#{rich:component('loginRedirect:inputText')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+
+													</h:panelGroup>
+												</b:panel>
+												<b:panel title="#{msgs['clientForm.scopes']}" id="scopes"
+													look="primary">
+													<h:panelGroup id="selectedScopesId">
+														<a4j:repeat value="#{_clientAction.scopes}"
+															rowKeyVar="_scopeIdx" var="_scope"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}">
+																	<h:outputText
+																		value="#{_scope.id eq null ? _scope.displayName : _scope.id}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeScope(_scope.inum)}"
+																			execute="@this" render="selectedScopesId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddScopeButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addScope']}"
+															oncomplete="#{rich:component('scope:selectEntityModalPanel')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</b:panel>
+												<b:panel title="#{msgs['clientForm.responseTypes']}"
+													id="responseTypes" look="primary">
+													<h:panelGroup id="selectedResponseTypesId">
+														<a4j:repeat value="#{_clientAction.responseTypes}"
+															rowKeyVar="_responseTypeIdx" var="_responseType"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}">
+																	<h:outputText value="#{_responseType.value}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px;float:right;"
+																			action="#{_clientAction.removeResponseType(_responseType.value)}"
+																			execute="@this" render="selectedResponseTypesId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddResponseTypeButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addResponseType']}"
+															oncomplete="#{rich:component('responseType:selectEntityModalPanel')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</b:panel>
+											</h:panelGroup>
+										</div>
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="tokenEndpointAuthMethod"
+												label="#{msgs['clientForm.authenticationMethod']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu
+													styleClass="col-sm-9 form-control rounded tokenEndpointAuthMethodSelectBox"
+													value="#{_client.tokenEndpointAuthMethod}"
+													id="tokenEndpointAuthMethodId" required="false">
+													<f:selectItems
+														value="#{_clientAction.authenticationMethods}"
+														var="_method" label="#{_method.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="subjectType"
+												label="#{msgs['clientForm.idTokenSubjectType']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu
+													styleClass="col-sm-9 form-control rounded subjectTypeSelectBox"
+													value="#{_client.subjectType}" id="subjectTypeId"
+													required="true">
+													<f:ajax render="clientForm:redirectLoginUrls"
+														listener="#{_clientAction.subjectTypeChanged}" />
+													<f:selectItems value="#{_clientAction.subjectTypes}"
+														var="_subjectType" label="#{_subjectType.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="oxAuthTrustedClientBox"
+												label="#{msgs['clientForm.preAuthorization']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectBooleanCheckbox
+													value="#{_client.oxAuthTrustedClient}" id="trustedClientId"
+													styleClass="oxAuthTrustedClientSelectBox rounded"
+													onchange="togglePersistAuthorization()" required="true" />
+											</ox:decorate>
+											
+											<ox:decorate id="applicatonType"
+												label="#{msgs['clientForm.applicationType']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu
+													styleClass="col-sm-12 form-control rounded applicationTypeSelectBox"
+													value="#{_client.oxAuthAppType}" id="applicationTypeId"
+													required="true">
+													<f:ajax listener="#{_clientAction.appTypeChanged}" />
+													<f:selectItems value="#{_clientAction.applicationType}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+
+											</ox:decorate>					
+											
+											<div class="row" style="padding-left: 25px;">
+												<b:panel title="#{msgs['clientForm.grantTypes']}"
+													id="grantTypes" look="primary">
+													<h:panelGroup id="selectedGrantTypesId">
+														<a4j:repeat value="#{_clientAction.grantTypes}"
+															rowKeyVar="_grantTypeIdx" var="_grantType"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																	style="overflow-x: scroll;">
+																	<h:outputText value="#{_grantType.value}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeGrantType(_grantType.value)}"
+																			execute="@this" render="selectedGrantTypesId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddGrantTypeButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addGrantType']}"
+															oncomplete="#{rich:component('grantType:selectEntityModalPanel')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</b:panel>
+											</div>
+																						
+										</div>
+
+									</div>
+								</h:panelGroup>
+							</div>
+							<!-- Token -->
+							<div class="tab-pane box box-primary" id="token">
+								<h:panelGroup columns="1" width="100%">
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="accessTokenAsJwt"
+												label="#{msgs['clientForm.accessTokenAsJwt']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectBooleanCheckbox value="#{_client.accessTokenAsJwt}"
+													id="accessTokenAsJwtId" styleClass="col-sm-9 rounded"
+													required="false" />
+											</ox:decorate>
+											<ox:decorate id="runIntrospectionScriptBeforeAccessTokenAsJwtCreationAndIncludeClaims"
+												label="#{msgs['clientForm.runIntrospectionScriptBeforeAccessTokenAsJwtCreationAndIncludeClaims']}" leftClass="col-sm-6"
+												rightClass="col-sm-6">
+												<h:selectBooleanCheckbox value="#{_client.attributes.runIntrospectionScriptBeforeAccessTokenAsJwtCreationAndIncludeClaims}"
+													id="runIntrospectionScriptBeforeAccessTokenAsJwtCreationAndIncludeClaimsId" styleClass="col-sm-9 rounded"
+													required="false" />
+											</ox:decorate>
+											
+											
+										</div>
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											
+											<a4j:outputPanel>
+												<ox:decorate id="includeClaimsInIdToken"
+													label="#{msgs['clientForm.includeClaimsInIdToken']}"
+													leftClass="col-sm-6" rightClass="col-sm-6">
+													<h:selectBooleanCheckbox
+														value="#{_client.oxIncludeClaimsInIdToken}"
+														id="includeClaimsInIdTokenId"
+														styleClass="col-sm-9 rounded"
+														disabled="#{!jsonConfigurationService.getOxauthAppConfiguration().legacyIdTokenClaims}"
+														required="true" />
+												</ox:decorate>
+												<rich:tooltip
+													rendered="#{!jsonConfigurationService.getOxauthAppConfiguration().legacyIdTokenClaims}">
+													<span style="white-space: nowrap">
+														#{msgs['clientForm.includeClaimsInIdTokenTooltip']} </span>
+												</rich:tooltip>									
+											
+											</a4j:outputPanel>											
+										</div>
+									</div>
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">										
+										<div class="row" style="margin-left: 5px; margin-right: 5px;">
+											<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+												
+												<ox:decorate id="idTokenTokenBindingCnf"
+													leftClass="col-sm-3" rightClass="col-sm-9"
+													label="#{msgs['clientForm.idTokenTokenBindingCnf']}">
+													<h:inputText value="#{_client.idTokenTokenBindingCnf}"
+														required="false"
+														styleClass="form-control idTokenTokenBindingCnfId"
+														id="idTokenTokenBindingCnfId" />
+												</ox:decorate>
+												
+												<!-- Additional Audience -->
+												<b:panel title="#{msgs['clientForm.AdditionalAudience']}"
+												id="additionalAudiences" look="primary">
+														<h:panelGroup id="selectedAdditionalAudiencesId">
+															<h:panelGroup columns="1" width="100%" border="0"
+																cellpadding="0" cellspacing="0">
+																<a4j:repeat value="#{_clientAction.additionalAudienceList}"
+																	rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+																	<div class="row-fluid">
+																		<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																			style="overflow-x: scroll;">
+																			<h:outputText value="#{empty _uri ? _uri : _uri}" />
+																			<h:outputText value="&#160;" />
+																			<div>
+																				<a4j:commandLink
+																					styleClass="glyphicon glyphicon-remove"
+																					style="margin-top:-20px; float:right;"
+																					action="#{_clientAction.removeAdditionalAudience(_uri)}"
+																					execute="@this" render="selectedAdditionalAudiencesId"
+																					eventsQueue="clientQueue">
+																					<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																				</a4j:commandLink>
+																			</div>
+																		</div>
+																	</div>
+																	<br />
+																</a4j:repeat>
+																<p:spacer height="16" />
+																<a4j:commandButton
+																	styleClass="btn btn-primary AddAdditionalAudiencesButton"
+																	style="margin-top:5px"
+																	value="#{msgs['clientForm.addAdditionalAudiences']}"
+																	oncomplete="#{rich:component('AdditionalAudience:inputText')}.show();"
+																	execute="@this" eventsQueue="audienceQueue" />
+															</h:panelGroup>
+														</h:panelGroup>
+												</b:panel>
+												
+												
+												
+												<!-- End Additional Audience -->
+												
+												<ox:decorate id="oxRefreshTokenLifetime"
+													leftClass="col-sm-3" rightClass="col-sm-9"
+													label="#{msgs['clientForm.oxRefreshTokenLifetime']}">
+													<h:inputText value="#{_client.oxRefreshTokenLifetime}"
+														required="false"
+														styleClass="form-control oxRefreshTokenLifetimeId"
+														id="oxRefreshTokenLifetimeId" />
+												</ox:decorate>
+												<ox:decorate id="oxdId" leftClass="col-sm-3"
+													rightClass="col-sm-9" label="#{msgs['clientForm.oxdId']}">
+													<h:inputText value="#{_client.oxdId}" style="width:100%;"
+														required="false" styleClass="form-control oxdIdId"
+														id="oxdIdId" />
+												</ox:decorate>
+												<ox:decorate id="defaultMaxAge" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.defaultMaximumAuthenticationAge']}">
+													<h:inputText value="#{_client.defaultMaxAge}"
+														required="false" styleClass="form-control defaultMaxAgeId"
+														id="defaultMaxAgeId" />
+												</ox:decorate>
+												<ox:decorate id="accessTokenLifetime" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.accessTokenLifetime']}">
+													<h:inputText value="#{_client.accessTokenLifetime}"
+														required="false"
+														styleClass="form-control accessTokenLifetime"
+														id="accessTokenLifetime" />
+												</ox:decorate>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+							</div>
+							
+							<!-- Advanced Settings -->
+							<div class="tab-pane box box-primary" id="advancedSettings">							
+							
+							<ox:decorate id="persistClientAuthorizations"
+												label="#{msgs['clientForm.persistClientAuthorization']}"
+												leftClass="col-sm-3" rightClass="col-sm-3">
+												<h:selectBooleanCheckbox
+													value="#{_client.oxAuthPersistClientAuthorizations}"
+													id="persisteClientAuthorizationsId"
+													styleClass="persistClientAuthorizationSelectBox rounded"
+													onchange="togglePersistAuthorization()" />
+							</ox:decorate>
+							<ox:decorate id="keepClientAuthorizationAfterExpiration"
+												label="#{msgs['clientForm.keepClientAuthorizationAfterExpiration']}"
+												leftClass="col-sm-3" rightClass="col-sm-3">
+												<h:selectBooleanCheckbox
+													value="#{_client.attributes.keepClientAuthorizationAfterExpiration}"
+													id="keepClientAuthorizationAfterExpirationId"
+													styleClass="keepClientAuthorizationAfterExpirationSelectBox rounded"
+													 />
+							</ox:decorate>
+							<ox:decorate id="allowSpontaneousScope"
+												label="#{msgs['clientForm.allowSpontaneousScope']}"
+												leftClass="col-sm-3" rightClass="col-sm-3">
+												<h:selectBooleanCheckbox
+													value="#{_client.attributes.allowSpontaneousScopes}"
+													id="allowSpontaneousScopeId"
+													styleClass="allowSpontaneousScopeSelectBox rounded"
+													/>
+							</ox:decorate>
+							<ox:decorate id="initiateLoginUri"
+													label="#{msgs['clientForm.initiateLoginURI']}"
+													leftClass="col-sm-3" rightClass="col-sm-9">
+													<h:inputText value="#{_client.initiateLoginUri}"
+														required="false"
+														styleClass="form-control initiateLoginUriId"
+														id="initiateLoginUriId" />
+							</ox:decorate>
+							
+							<b:panel title="#{msgs['clientForm.requestURI']}"
+												id="requestUris" look="primary">
+												<h:panelGroup id="selectedRequestUrisId">
+													<h:panelGroup columns="1" width="100%" border="0"
+														cellpadding="0" cellspacing="0">
+														<a4j:repeat value="#{_clientAction.requestUris}"
+															rowKeyVar="_requestUrisIdx" var="_requestUri"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																	style="overflow-x: scroll;">
+																	<h:outputText value="#{_requestUri}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeRequestUri(_requestUri)}"
+																			execute="@this" render="selectedRequestUrisId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddRequestUriButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addRequestURI']}"
+															oncomplete="#{rich:component('requestUri:inputText')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</h:panelGroup>
+							</b:panel>
+							
+							<ox:decorate id="defaultAcrValues" label="#{msgs['clientForm.defaultAcrValue']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<!-- <h:inputText id="defaultAcrValuesId"
+													value="#{_client.defaultAcrValues}" style="width:100%"
+													styleClass="form-control defaultAcrValuesId" /> -->
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_client.defaultAcrValues}"
+														id="defaultAcrValuesId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.availableCustomScriptsAcr}" 
+															var="acr" 
+															itemLabel="#{acr.name}"
+															itemValue="#{acr.name}"
+															/>
+													</h:selectOneMenu>
+							</ox:decorate>
+							
+							<ox:decorate id="tlsSubjectDn" label="#{msgs['clientForm.tlsSubjectDn']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<h:inputText id="tlsSubjectDnId"
+													value="#{_clientAction.tlsSubjectDn}" style="width:100%"
+													styleClass="form-control tlsSubjectDnId" />
+							</ox:decorate>
+							
+							<h:panelGroup id="expirationBlockId">
+												<ox:decorate id="shouldExpiredId" leftClass="col-sm-3"
+													rightClass="col-sm-3" label="Expirable client">
+													<h:selectBooleanCheckbox value="#{_client.deletable}"
+														id="expirableClientID" styleClass="col-sm-9 rounded"
+														required="false">
+														<a4j:ajax event="click" render="expirationBlockId"
+															execute="@this" limitRender="true" />
+													</h:selectBooleanCheckbox>
+												</ox:decorate>
+												<ox:decorate id="clientExpirationId" leftClass="col-sm-6"
+													rightClass="col-sm-6" rendered="#{_client.deletable}"
+													label="#{msgs['clientForm.expirationDate']}">
+													<b:dateTimePicker id="calendar" renderLabel="false"
+														mode="toggle-icon" value="#{_client.exp}"
+														format="DD.MM.YYYY HH:mm">
+													</b:dateTimePicker>
+												</ox:decorate>
+							</h:panelGroup>						
+							
+							</div>
+							
+							<!-- Logout Tab -->
+							<div class="tab-pane box box-primary" id="logout">								
+								<h:panelGroup columns="1" width="100%">
+								<div class="col-sm-9 col-lg-9" style="padding: 0px;">									
+									
+									<b:panel title="Front Channel Logout URI"
+										id="clientLogoutUrls" look="primary">
+										<h:panelGroup id="selectedClientUrisId">
+											<h:panelGroup columns="1" width="100%" border="0"
+												cellpadding="0" cellspacing="0">
+												<a4j:repeat value="#{_clientAction.clientlogoutUris}"
+													rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+													<div class="row-fluid">
+														<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+															style="overflow-x: scroll;">
+															<h:outputText value="#{empty _uri ? _uri : _uri}" />
+															<h:outputText value="&#160;" />
+															<div class="span6 pull-right">
+																<a4j:commandLink
+																	styleClass="glyphicon glyphicon-remove"
+																	action="#{_clientAction.removeClientLogoutURI(_uri)}"
+																	execute="@this" render="selectedClientUrisId"
+																	eventsQueue="clientQueue">
+																	<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																</a4j:commandLink>
+															</div>
+														</div>
+													</div>
+													<br />
+												</a4j:repeat>
+												<p:spacer height="16" />
+												<a4j:commandButton
+													styleClass="btn btn-primary addLogoutUriButton"
+													style="margin-top:5px" value="Add Frontchannel Logout URI"
+													oncomplete="#{rich:component('clientLogoutUri:inputText')}.show();"
+													execute="@this" eventsQueue="clientQueue" />
+											</h:panelGroup>
+										</h:panelGroup>
+									</b:panel>
+																		
+									<b:panel title="#{msgs['clientForm.redirectLogoutURIs']}"
+										id="redirectLogoutUrl" look="primary">
+										<h:panelGroup id="selectedRedirectLogoutUrlId">
+											<h:panelGroup columns="1" width="100%" border="0"
+												cellpadding="0" cellspacing="0">
+												<a4j:repeat value="#{_clientAction.redirectLogoutUrl}"
+													rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+													<div class="row-fluid">
+														<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+															style="overflow-x: scroll;">
+															<h:outputText value="#{empty _uri ? _uri : _uri}" />
+															<h:outputText value="&#160;" />
+															<div class="span6 pull-right">
+																<a4j:commandLink
+																	styleClass="glyphicon glyphicon-remove"
+																	action="#{_clientAction.removeRedirectLogoutUrl(_uri)}"
+																	execute="@this" render="selectedRedirectLogoutUrlId"
+																	eventsQueue="clientQueue">
+																	<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																</a4j:commandLink>
+															</div>
+														</div>
+													</div>
+													<br />
+												</a4j:repeat>
+												<p:spacer height="16" />
+												<a4j:commandButton
+													styleClass="btn btn-primary addLogoutUriButton"
+													style="margin-top:5px" value="Add Post Logout Redirect URI"
+													oncomplete="#{rich:component('redirectLogoutUrlsId:inputText')}.show();"
+													execute="@this" eventsQueue="clientQueue" />
+											</h:panelGroup>
+										</h:panelGroup>
+									</b:panel>									
+									
+										<b:panel title="Back Channel Logout URI"
+											id="backchannelLogoutUri" look="primary">
+											<h:panelGroup id="selectedClientBackLogoutUrisId">
+												<h:panelGroup columns="1" width="100%" border="0"
+													cellpadding="0" cellspacing="0">
+													<a4j:repeat
+														value="#{_clientAction.clientBackChannellogoutUris}"
+														rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+														<div class="row-fluid">
+															<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																style="overflow-x: scroll;">
+																<h:outputText value="#{empty _uri ? _uri : _uri}" />
+																<h:outputText value="&#160;" />
+																<div class="span6 pull-right">
+																	<a4j:commandLink
+																		styleClass="glyphicon glyphicon-remove"
+																		action="#{_clientAction.removeClientBackLogoutURI(_uri)}"
+																		execute="@this"
+																		render="selectedClientBackLogoutUrisId"
+																		eventsQueue="clientQueue">
+																		<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																	</a4j:commandLink>
+																</div>
+															</div>
+														</div>
+														<br />
+													</a4j:repeat>
+													<p:spacer height="16" />
+													<a4j:commandButton
+														styleClass="btn btn-primary addLogoutUriButton"
+														style="margin-top:5px" value="Add Back channel Logout URI"
+														oncomplete="#{rich:component('backchannelLogoutUris:inputText')}.show();"
+														execute="@this" eventsQueue="clientQueue" />
+												</h:panelGroup>
+											</h:panelGroup>
+										</b:panel>
+										<p:spacer height="16" />
+										<ox:decorate id="backChannellogoutSessionRequired"
+												label="Back Channel logout Session Required"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectBooleanCheckbox
+													value="#{_client.attributes.backchannelLogoutSessionRequired}"
+													id="backChannellogoutSessionRequiredId" styleClass="col-sm-9 rounded"
+													required="true" />
+									</ox:decorate>
+									
+									<ox:decorate id="logoutSessionRequired"
+												label="#{msgs['clientForm.frontchannellogoutSessionRequired']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectBooleanCheckbox
+													value="#{_client.logoutSessionRequired}"
+													id="logoutSessionRequiredId" styleClass="col-sm-9 rounded"
+													required="true" />
+									</ox:decorate>
+									</div>									
+								</h:panelGroup>
+							</div>
+							
+							<!-- Software Info -->
+							<div class="tab-pane box box-primary" id="softwareinfo">
+								<h:panelGroup columns="1" width="100%">
+									<ox:decorate id="clientUri"
+													label="#{msgs['clientForm.clientUri']}"
+													leftClass="col-sm-3" rightClass="col-sm-9">
+													<h:inputText value="#{_client.clientUri}"
+														styleClass="form-control clientUriId" required="false"
+														id="clientUriId" />
+									</ox:decorate>
+									<ox:decorate id="policyUri"
+												label="#{msgs['clientForm.policyUri']}" leftClass="col-sm-3"
+												rightClass="col-sm-9">
+												<h:inputText value="#{_client.policyUri}"
+													styleClass="form-control logoUriId policyUriId"
+													required="false" id="policyUriId" />
+									</ox:decorate>
+									<ox:decorate id="logoUri"
+												label="#{msgs['clientForm.logoURI']}" leftClass="col-sm-3"
+												rightClass="col-sm-9">
+												<h:inputText value="#{_client.logoUri}"
+													styleClass="form-control logoUriId logoUriId"
+													required="false" id="logoUriId" />
+									</ox:decorate>									
+									<ox:decorate id="tosUri"
+													label="#{msgs['clientForm.termsOfServiceURI']}"
+													leftClass="col-sm-3" rightClass="col-sm-9">
+													<h:inputText value="#{_client.tosUri}"
+														styleClass="form-control tosUriId" required="false"
+														id="tosUriId" />
+									</ox:decorate>
+									<div class="col-sm-6 col-lg-6" style="padding: 5px;">
+									<b:panel title="#{msgs['clientForm.contacts']}" id="contacts"
+												look="primary">
+												<h:panelGroup id="selectedContactsId">
+													<h:panelGroup columns="1" width="100%" border="0"
+														cellpadding="0" cellspacing="0">
+														<a4j:repeat value="#{_clientAction.contacts}"
+															rowKeyVar="_contactsIdx" var="_contact"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}">
+																	<h:outputText
+																		value="#{empty _contact ? _contact : _contact}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeContact(_contact)}"
+																			execute="@this" render="selectedContactsId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddContactButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addContact']}"
+															oncomplete="#{rich:component('contact:inputText')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</h:panelGroup>
+									</b:panel>
+									</div>
+									<div class="col-sm-6 col-lg-6" style="padding: 5px;">
+									<b:panel title="#{msgs['clientForm.authorizedOrigin']}"
+												id="authorizedOrigins" look="primary">
+												<h:panelGroup id="selectedAuthorizedOriginsId">
+													<h:panelGroup columns="1" width="100%" border="0"
+														cellpadding="0" cellspacing="0">
+														<a4j:repeat value="#{_clientAction.authorizedOrigins}"
+															rowKeyVar="_authorizedOriginsIdx" var="_authorizedOrigin"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																	style="overflow-x: scroll;">
+																	<h:outputText value="#{_authorizedOrigin}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeAuthorizedOrigin(_authorizedOrigin)}"
+																			execute="@this" render="selectedAuthorizedOriginsId"
+																			eventsQueue="clientQueue">
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddAuthorizeOriginButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addAuthorizedOrigin']}"
+															oncomplete="#{rich:component('authorizedOrigin:inputText')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</h:panelGroup>
+									</b:panel>
+									</div>
+									<ox:decorate id="softwareId" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.softwareId']}">
+													<h:inputText value="#{_client.softwareId}" required="false"
+														styleClass="form-control softwareId" id="softwareId" />
+												</ox:decorate>
+												<ox:decorate id="softwareVersion" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.softwareVersion']}">
+													<h:inputText value="#{_client.softwareVersion}"
+														required="false" styleClass="form-control softwareVersion"
+														id="softwareVersion" />
+												</ox:decorate>
+												<ox:decorate id="softwareStatement"
+													label="#{msgs['clientForm.softwareStatement']}"
+													leftClass="col-sm-3" rightClass="col-sm-9">
+													<h:inputTextarea styleClass="form-control rounded"
+														readonly="true" value="#{_client.softwareStatement}"
+														rows="3" cols="80" maxlength="4000" id="softwareStatement" />
+									</ox:decorate>								
+								</h:panelGroup>
+							</div>
+							
+							<!-- CIBA -->
+							<div class="tab-pane box box-primary" id="ciba">
+								<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+											<b:panel title="CIBA"
+												id="CIBAheader" look="primary">
+								<ox:decorate id="cibaTokenDeliveryMode" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.cibaTokenDeliveryMode']}">
+													<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+														value="#{_client.backchannelTokenDeliveryMode}"
+														id="cibaTokenDeliveryModeId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.cibaTokenDeliveryModes}" />
+													</h:selectOneMenu>
+								</ox:decorate>
+								<ox:decorate id="cibaClientNotificationEndpoint"
+													leftClass="col-sm-3" rightClass="col-sm-9"
+													label="#{msgs['clientForm.cibaClientNotificationEndpoint']}">
+													<h:inputText
+														value="#{_client.backchannelClientNotificationEndpoint}"
+														required="false"
+														styleClass="form-control cibaClientNotificationEndpoint">
+													</h:inputText>
+								</ox:decorate>
+								<ox:decorate id="cibaUserCodeParameter" leftClass="col-sm-3"
+													rightClass="col-sm-9"
+													label="#{msgs['clientForm.cibaUserCodeParameter']}">
+													<h:selectBooleanCheckbox
+														value="#{_client.backchannelUserCodeParameter}"
+														id="cibaUserCodeParameterId" styleClass="col-sm-9 rounded"
+														required="false" />
+								</ox:decorate>
+								</b:panel></div>
+								<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+											<b:panel title="UMA"
+												id="UMAhader" look="primary">						
+								
+								<ox:decorate id="rptAsJwt"
+												label="#{msgs['clientForm.rptAsJwt']}" leftClass="col-sm-3"
+												rightClass="col-sm-6">
+												<h:selectBooleanCheckbox value="#{_client.rptAsJwt}"
+													id="rptAsJwtId" styleClass="col-sm-9 rounded"
+													required="false" />
+								</ox:decorate>
+								
+								<ox:decorate id="rptClaimsScripts" label="#{msgs['clientForm.rptClaimsScripts']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_clientAction.rptClaimsScript}"
+														id="rptClaimsScriptsId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.searchAvailableCustomScriptsforrptClaimsScripts()}" 
+															var="script" 
+															itemLabel="#{script.name}"
+															itemValue="#{script.dn}"
+															/>
+													</h:selectOneMenu>
+								</ox:decorate>
+								<ox:decorate id="consentGatheringScripts" label="#{msgs['clientForm.consentGatheringScripts']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_clientAction.customScriptsforConsentGather}"
+														id="consentGatheringScriptsId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.searchAvailableCustomScriptsforConsentGath()}" 
+															var="script" 
+															itemLabel="#{script.name}"
+															itemValue="#{script.dn}"
+															/>
+													</h:selectOneMenu>
+								</ox:decorate>
+								
+								
+								<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<b:panel title="#{msgs['clientForm.claimRedirectURI']}"
+												id="claimRedirectUrls" look="primary">
+												<h:panelGroup id="selectedClaimRedirectURIIsId">
+													<h:panelGroup columns="1" width="100%" border="0"
+														cellpadding="0" cellspacing="0">
+														<a4j:repeat value="#{_clientAction.claimRedirectURIList}"
+															rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																	style="overflow-x: scroll;">
+																	<h:outputText value="#{empty _uri ? _uri : _uri}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeClaimRedirectURI(_uri)}"
+																			execute="@this" render="selectedClaimRedirectURIIsId"
+																			eventsQueue="clientQueue">
+																			<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														<a4j:commandButton
+															styleClass="btn btn-primary AddClaimRedirectUriButton"
+															style="margin-top:5px"
+															value="#{msgs['clientForm.addClaimRedirectURI']}"
+															oncomplete="#{rich:component('claimRedirectUri:inputText')}.show();"
+															execute="@this" eventsQueue="clientQueue" />
+													</h:panelGroup>
+												</h:panelGroup>
+											</b:panel>
+											<ox:decorate id="claims" label="#{msgs['clientForm.claims']}"
+												rendered="#{_clientAction.claims.size() > 0 }"
+												render="#{_clientAction.claims.size() > 0}">
+												<h:panelGroup id="selectedClaimsId">
+													<h:panelGroup>
+														<a4j:repeat value="#{_clientAction.claims}"
+															rowKeyVar="_claimIdx" var="_claim"
+															iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ? 'odd' : 'even'}"
+																	style="overflow-x: scroll;">
+																	<h:outputText value="#{_claim.displayName}" />
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top: -20px; float:right;"
+																			action="#{_clientAction.removeClaim(_claim.inum)}"
+																			execute="@this" render="selectedClaimsId"
+																			eventsQueue="clientQueue"></a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+													</h:panelGroup>
+												</h:panelGroup>
+											</ox:decorate>
+											<b:panel title="Resources"
+												id="ResourcesUrls" look="primary">
+												<h:panelGroup id="ResourcesUrlsId">
+													<h:panelGroup columns="1" width="100%" border="0"
+														cellpadding="0" cellspacing="0">
+														<a4j:repeat value="#{_clientAction.resources}"
+															rowKeyVar="_urisIdx" var="_uri" iterationStatusVar="loop">
+															<div class="row-fluid">
+																<div class="#{(loop.index % 2 == 0) ?'odd':'even'}"
+																		style="overflow-x: scroll;">
+																<h:link 
+																	outcome="/uma/resource/modifyResource.htm?resource=#{_uri.id}" 
+																	value="#{_uri.name}">
+																</h:link>
+																	
+																	<h:outputText value="&#160;" />
+																	<div>
+																		<a4j:commandLink
+																			styleClass="glyphicon glyphicon-remove"
+																			style="margin-top:-20px; float:right;"
+																			action="#{_clientAction.removeClientResource(_uri.id)}"
+																			execute="@this"  render="ResourcesUrlsId"
+																			eventsQueue="clientQueue">
+																			<!-- <h:graphicImage value="/img/remove.gif" /> -->
+																		</a4j:commandLink>
+																	</div>
+																</div>
+															</div>
+															<br />
+														</a4j:repeat>
+														<p:spacer height="16" />
+														
+													</h:panelGroup>
+												</h:panelGroup>
+											</b:panel>
+																						
+										</div>	
+										
+								</b:panel></div>						
+							</div>
+							
+							<!-- Encryption tab -->
+							<div class="tab-pane box box-primary"
+								id="encryptionsigningSettings">
+								<h:panelGroup columns="1" width="100%">
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+											<ox:decorate id="jwksUri"
+												label="#{msgs['clientForm.jwksURI']}" leftClass="col-sm-3"
+												rightClass="col-sm-9">
+												<h:inputText value="#{_client.jwksUri}" required="false"
+													styleClass="form-control jwksUriId" id="jwksUriId"  />
+											</ox:decorate>
+											<ox:decorate id="jwks" label="#{msgs['clientForm.jwks']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+												<h:inputTextarea styleClass="form-control rounded"
+													value="#{_client.jwks}" rows="3" cols="80" maxlength="4000"
+													id="jwksId" />
+											</ox:decorate>
+										</div>
+									</div>
+									<div class="row" style="margin-left: 5px; margin-right: 5px;">
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="requestObjectEncryptionAlg"
+												label="#{msgs['clientForm.jweAlgAlgorithmforEncryptingRequestObjects']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.requestObjectEncryptionAlg}"
+													id="requestObjectEncryptionAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.keyEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="requestObjectEncryptionEnc"
+												label="#{msgs['clientForm.jweEncAlgorithmForEncryptingRequestObjects']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.requestObjectEncryptionEnc}"
+													id="requestObjectEncryptionEncId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.blockEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="requestObjectSigningAlg"
+												label="#{msgs['clientForm.jwsAlgAlgorithmForSigningRequestObjects']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.requestObjectSigningAlg}"
+													id="requestObjectSigningAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems value="#{_clientAction.signatureAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="userInfoEncryptedResponseAlg"
+												label="#{msgs['clientForm.jweAlgAlgorithm']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.userInfoEncryptedResponseAlg}"
+													id="userInfoEncryptedResponseAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.keyEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="userInfoEncryptedResponseEnc"
+												label="#{msgs['clientForm.jweEncAlgorithm']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.userInfoEncryptedResponseEnc}"
+													id="userInfoEncryptedResponseEncId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.blockEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="userInfoSignedResponseAlg"
+												label="#{msgs['clientForm.jwsAlgAlgorithm']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.userInfoSignedResponseAlg}"
+													id="userInfoSignedResponseAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems value="#{_clientAction.signatureAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+										</div>
+										<div class="col-sm-6 col-lg-6" style="padding: 0px;">
+											<ox:decorate id="accessTokenSigningAlg"
+												label="#{msgs['clientForm.accessTokenSigningAlg']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.accessTokenSigningAlg}"
+													id="accessTokenSigningAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.signatureAlgorithmsWithoutNone}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="idTokenEncryptedResponseAlg"
+												label="#{msgs['clientForm.jweAlgorithmForEncrypting']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.idTokenEncryptedResponseAlg}"
+													id="idTokenEncryptedResponseAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.keyEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="idTokenSignedResponseAlg"
+												label="#{msgs['clientForm.jWSAlgorithmForSigning']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.idTokenSignedResponseAlg}"
+													id="idTokenSignedResponseAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.signatureAlgorithmsWithoutNone}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="idTokenEncryptedResponseEnc"
+												label="#{msgs['clientForm.jweEncAlgorithmForEncrypting']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.idTokenEncryptedResponseEnc}"
+													id="idTokenEncryptedResponseEncId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.blockEncryptionAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="tokenEndpointAuthSigningAlg"
+												label="#{msgs['clientForm.jwsAlgAlgorithmForAuthentication']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.tokenEndpointAuthSigningAlg}"
+													id="tokenEndpointAuthSigningAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems value="#{_clientAction.signatureAlgorithms}"
+														var="_type" itemLabel="#{_type.displayName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+											<ox:decorate id="cibaAuthenticationRequestSigningAlg"
+												label="#{msgs['clientForm.cibaAuthenticationRequestSigningAlg']}"
+												leftClass="col-sm-6" rightClass="col-sm-6">
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded"
+													value="#{_client.backchannelAuthenticationRequestSigningAlg}"
+													id="cibaAuthenticationRequestSigningAlgId" required="false">
+													<f:selectItem noSelectionOption="true" itemLabel="" />
+													<f:selectItems
+														value="#{_clientAction.asymmetricSignatureAlgorithms}"
+														var="_type" itemLabel="#{_type.paramName}" />
+													<f:converter
+														converterId="org.gluu.jsf2.converter.EnumConverter" />
+												</h:selectOneMenu>
+											</ox:decorate>
+										</div>
+									</div>									
+								</h:panelGroup>
+							</div>
+							<!-- clientAttributes tab -->
+							<div class="tab-pane box box-primary" id="clientAttributes"
+								style="background-color: white;">
+								<h:panelGroup columns="1" width="100%" prependId="false"
+									style="background-color: white;">
+									<ui:decorate id="oxAuthClientAttributes" prependId="false"
+										template="/WEB-INF/incl/layout/jsonclienteditor.xhtml">
+										<ui:param name="id" value="oxAuthClientAttributes" />
+										<ui:param name="parentId" value="oxAuthClientAttributes" />
+										<ui:param name="json"
+											value="#{_clientAction.oxAttributesJson}" />
+										<ui:param name="jsonSchema"
+											value="#{request.contextPath}/schema/oxAttributes.properties.json" />
+										<ui:param name="saveBtnId" value="updateButtons" />
+										<ui:param name="saveBtnLabel" value="Save attributes" />
+									</ui:decorate>
+									<h:panelGroup styleClass="hiddenFieldBox">
+										<h:inputHidden prependId="false" id="#{id}_hidden"
+											style="width:100%;" value="#{_clientAction.oxAttributesJson}"
+											class="hiddenField" />
+									</h:panelGroup>
+								</h:panelGroup>
+							</div>
+							<div class="tab-pane box box-primary" id="customScripts"
+								style="background-color: white;">
+								<div class="row" style="padding-left: 25px;">
+									<ox:decorate id="postAuthnScripts" label="#{msgs['clientForm.postAuthnScripts']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_clientAction.customScriptsforPostAuthn}"
+														id="postAuthnScriptsId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.searchAvailableCustomScriptsforPostAuthn()}" 
+															var="script" 
+															itemLabel="#{script.name}"
+															itemValue="#{script.dn}"
+															/>
+													</h:selectOneMenu>
+									</ox:decorate>
+									<ox:decorate id="spontaneousScopeScripts" label="#{msgs['clientForm.spontaneousScopeScripts']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_clientAction.spontaneousScopeCustomScript}"
+														id="spontaneousScopeScriptsId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.searchAvailableCustomScriptsforSpontaneousScope()}" 
+															var="script" 
+															itemLabel="#{script.name}"
+															itemValue="#{script.dn}"
+															/>
+													</h:selectOneMenu>
+									</ox:decorate>
+									<ox:decorate id="introspectionScripts" label="#{msgs['clientForm.introspectionScripts']}"
+												leftClass="col-sm-3" rightClass="col-sm-9">
+													
+												<h:selectOneMenu styleClass="col-sm-9 form-control rounded" 
+														value="#{_clientAction.introspectionCustomScript}"
+														id="introspectionScriptsId" required="false">
+														<f:selectItem noSelectionOption="true" itemLabel="" />
+														<f:selectItems
+															value="#{_clientAction.searchAvailableCustomScriptsforintrospection()}" 
+															var="script" 
+															itemLabel="#{script.name}"
+															itemValue="#{script.dn}"
+															/>
+													</h:selectOneMenu>
+									</ox:decorate>
+								</div>								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="box-footer">
+				<ui:insert name="controlButttons" />
+			</div>
+		</b:panel>
+	</h:form>
+	<ox:selectSelectableEntityDialog
+		acceptMethod="#{_clientAction.acceptRptClaimsScripts}"
+		cancelMethod="#{_clientAction.cancelRptClaimsScripts}"
+		displayNameProperty="entity.description" displaySearchForm="false"
+		id="rptClaimsDialog" label="#{msgs['clientForm.rptClaimsScripts']}"
+		nameProperty="entity.name" render="selectedRptClaimsScriptsId"
+		searchMethod="#{_clientAction.searchAvailableRptClaimsCustomScripts}"
+		searchResult="#{_clientAction.availableRptClaimsScripts}" />
+	<ox:selectSelectableEntityDialog
+		acceptMethod="#{_clientAction.acceptPostAuthnScripts}"
+		cancelMethod="#{_clientAction.cancelPostAuthnScripts}"
+		displayNameProperty="entity.description" displaySearchForm="false"
+		id="postAuthnDialog" label="#{msgs['clientForm.postAuthnScripts']}"
+		nameProperty="entity.name" render="selectedPostAuthnScriptsId"
+		searchMethod="#{_clientAction.searchAvailablePostAuthnCustomScripts}"
+		searchResult="#{_clientAction.availablePostAuthnScripts}" />
+	<ox:selectSelectableEntityDialog
+		acceptMethod="#{_clientAction.acceptConsentScripts}"
+		cancelMethod="#{_clientAction.cancelConsentScripts}"
+		displayNameProperty="entity.description" displaySearchForm="false"
+		id="consentDialog"
+		label="#{msgs['clientForm.consentGatheringScripts']}"
+		nameProperty="entity.name" render="selectedConsentScriptsId"
+		searchMethod="#{_clientAction.searchAvailableConsentCustomScripts}"
+		searchResult="#{_clientAction.availableConsentScripts}" />
+
+	<ox:selectSelectableEntityDialog
+		acceptMethod="#{_clientAction.acceptSpontaneousScopesScripts}"
+		cancelMethod="#{_clientAction.cancelSpontaneousScopesScripts}"
+		displayNameProperty="entity.description" displaySearchForm="false"
+		id="spontaneousScopeDialog"
+		label="#{msgs['clientForm.spontaneousScopeScripts']}"
+		nameProperty="entity.name"
+		render="selectedSpontaneousScopeScriptDnsId"
+		searchMethod="#{_clientAction.searchAvailableSpontaneousScopeScripts}"
+		searchResult="#{_clientAction.availableSpontaneousScripts}" />
+	<ox:selectSelectableEntityDialog
+		acceptMethod="#{_clientAction.acceptIntrospectionScripts}"
+		cancelMethod="#{_clientAction.cancelIntrospectionScripts}"
+		displayNameProperty="entity.description" displaySearchForm="false"
+		id="introspectionDialog"
+		label="#{msgs['clientForm.introspectionScripts']}"
+		nameProperty="entity.name" render="selectedIntrospectionScriptsId"
+		searchMethod="#{_clientAction.searchAvailableIntrospectionCustomScripts}"
+		searchResult="#{_clientAction.availableIntrospectionScripts}" />
+	<script>
+	    $('#oidctab a').click(function(e) {
+		  e.preventDefault();
+		  $(this).tab('show');
+		});
+
+		// store the currently selected tab in the local storage
+		$("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+		  var id = $(e.target).attr("href").substr(1);
+		  window.localStorage.setItem('oidctab', id);
+		});
+     
+		// on load of the page: switch to the currently selected tab
+		 $(document).ready(function() {
+			    var value =  window.localStorage.getItem('oidctab');
+            	if (value) {
+            		var activeTab = "#";
+            		activeTab = activeTab.concat(value);  
+            		$('#oidctab a[href="' + activeTab + '"]').tab('show');
+            	}
+            	var value = $(".clientGeneratedInum").text();
+            	var n = value.startsWith("@!");
+            	if(n){
+            		 $(".clientSecretTextBox").attr("readonly", true);
+            	}
+            	hideClientSecret();
+            	lock();
+       });
+		
+		 $(document).on("click",".lockClientSecretField", function () {
+			 var state = $(".clientSecretTextBox").attr("readonly");
+			 if(state){
+				 $(".clientSecretTextBox").attr("readonly", false);
+				 $(".lockClientSecretField").text("Lock Secret Field");
+			 }else{
+				 $(".clientSecretTextBox").attr("readonly", true);
+				 $(".lockClientSecretField").text("Unlock Secret Field");
+			 }
+			});
+    </script>
+	<h:outputScript>
+        function lock(){
+            var value = $(".clientGeneratedInum").text()
+            if(value.startsWith("Will")){
+             $(".clientSecretTextBox").attr("readonly", false);
+            }else{
+             $(".clientSecretTextBox").attr("readonly", true);
+             }
+         }
+         
+        function reload(){
+            setTimeout(function(){ window.location.reload(); }, 2000);
+        }
+    </h:outputScript>
+</ui:composition>

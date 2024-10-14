@@ -1,0 +1,70 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:panelGrid columns="2" id="saml2ar" columnClasses="half,half" width="100%"
+        rendered="#{_relyingPartyAction.isProfileConfigurationSelected('SAML2ArtifactResolution')}">
+
+        <ui:param name="_profileConfigurationSelected" value="#{_relyingPartyAction.getProfileConfiguration('SAML2ArtifactResolution')}" />
+
+        <rich:panel id="SAML2ArtifactResolutionDescription" bodyClass="inpanelBody">
+            <f:facet name="header">
+                <h:outputText value="#{msgs['trustmanager.saml2ArtifactResolutionHelp']}" />
+            </f:facet>
+            #{msgs['trustmanager.thisProfileConfiguration']}
+        </rich:panel>
+        <rich:panel id="SAML2ArtifactResolutionMenu" bodyClass="inpanelBody">
+            <f:facet name="header">
+                <h:outputText value="#{msgs['trustmanager.saml2ArtifactResolutionProfileConfiguration']}" />
+            </f:facet>
+            <h:panelGrid columns="2">
+                <h:outputText value="#{msgs['trustmanager.signResponses']} " />
+                <h:selectOneMenu value="#{_profileConfigurationSelected.signResponses}">
+                    <f:selectItem itemLabel="#{msgs['trustmanager.never']}" itemValue="never" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.conditional']}" itemValue="conditional" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.always']}" itemValue="always" />
+                </h:selectOneMenu>
+                <h:outputText value="#{msgs['trustmanager.signAssertions']} " />
+                <h:selectOneMenu value="#{_profileConfigurationSelected.signAssertions}">
+                    <f:selectItem itemLabel="#{msgs['trustmanager.never']}" itemValue="never" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.conditional']}" itemValue="conditional" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.always']}" itemValue="always" />
+                </h:selectOneMenu>
+                <h:outputText value="#{msgs['trustmanager.signRequests']} " />
+                <h:selectOneMenu value="#{_profileConfigurationSelected.signRequests}">
+                    <f:selectItem itemLabel="#{msgs['trustmanager.never']}" itemValue="never" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.conditional']}" itemValue="conditional" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.always']}" itemValue="always" />
+                </h:selectOneMenu>
+                <h:outputText value="#{msgs['trustmanager.encryptAssertions']}: " />
+                <h:selectOneMenu value="#{_profileConfigurationSelected.encryptAssertions}">
+                    <f:selectItem itemLabel="#{msgs['trustmanager.never']}" itemValue="never" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.conditional']}" itemValue="conditional" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.always']}" itemValue="always" />
+                </h:selectOneMenu>
+                <h:outputText value="#{msgs['trustmanager.encryptNameIds']} " />
+                <h:selectOneMenu value="#{_profileConfigurationSelected.encryptNameIds}">
+                    <f:selectItem itemLabel="#{msgs['trustmanager.never']}" itemValue="never" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.conditional']}" itemValue="conditional" />
+                    <f:selectItem itemLabel="#{msgs['trustmanager.always']}" itemValue="always" />
+                </h:selectOneMenu>
+            </h:panelGrid>
+            <h:panelGrid>
+                <h:outputText value="#{_profileConfigurationSelected.profileConfigurationCertFileName}"
+                    rendered="#{not empty _profileConfigurationSelected.profileConfigurationCertFileName}" />
+                <a4j:commandLink action="#{_profileConfigurationSelected.setProfileConfigurationCertFileName('')}" limitRender="true" render="SAML2ArtifactResolutionMenu"
+                    rendered="#{not empty _profileConfigurationSelected.profileConfigurationCertFileName}" execute="@this">
+                    <h:graphicImage value="/img/remove.gif" />
+                </a4j:commandLink>
+            </h:panelGrid>
+
+        </rich:panel>
+    </h:panelGrid>
+</ui:composition>

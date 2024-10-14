@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:b="http://bootsfaces.net/ui" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('uma', 'access')}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{passportProvidersAction.init}"
+			onPostback="false" />
+	</f:metadata>
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['passport.title']} <small> <i
+					class="fa fa-caret-right" style="color: #333 !important;" />#{msgs['passport.providers']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/passport/idpInitiatedFlows.htm">#{msgs['passport.idpInitiated']}</a></li>
+			</ol>
+		</section>
+		<section class="content">
+			<div class="row">
+				<div class="col-xs-12">
+					<b:panel title="Passport providers" look="primary"
+						iconAwesome="fa-list" collapsible="false">
+						<div class="row" style="padding: 5px; margin-bottom: 5px;">
+							<b:link style-class="addProviderButtonClass btn btn-primary"
+								icon="plus" outcome="/passport/addProvider"
+								value="#{msgs['passport.addNewProvider']}"
+								includeViewParams="false" />
+						</div>
+						<div class="row" style="padding: 10px;">
+							<b:dataTable id="providersTableId"
+								style="text-align:center; width:100%;" responsive="true"
+								rendered="#{passportProvidersAction.providerSelections.size() gt 0}"
+								value="#{passportProvidersAction.providerSelections}" var="c"
+								print="true" excel="true" csv="true" pdf="true" select="true">
+								<b:dataTableColumn label="#{msgs['passport.provider.form.id']}">
+									<b:link includeViewParams="false"
+										outcome="/passport/editProvider" value="#{c.provider.id}">
+										<f:param name="id" value="#{c.provider.id}" />
+									</b:link>
+								</b:dataTableColumn>
+								<b:dataTableColumn value="#{c.provider.displayName}"
+									label="#{msgs['passport.provider.form.displayName']}" />
+								<b:dataTableColumn value="#{c.provider.passportStrategyId}"
+									label="#{msgs['passport.provider.form.strategyId']}" />
+								<b:dataTableColumn value="#{c.provider.type}"
+									label="#{msgs['passport.provider.form.type']}" />
+								<b:dataTableColumn label="Status">
+									<b:label text="Enabled" rendered="#{c.provider.enabled}"
+										severity="success" />
+									<b:label text="Disabled" rendered="#{!c.provider.enabled}"
+										severity="info" />
+								</b:dataTableColumn>
+							</b:dataTable>
+						</div>
+					</b:panel>
+					<script>
+						$(document).ready(function() {
+						});
+						$('.tags').tagsinput('refresh');
+					</script>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+</ui:composition>

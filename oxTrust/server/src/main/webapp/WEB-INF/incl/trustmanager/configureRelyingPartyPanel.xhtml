@@ -1,0 +1,182 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:b="http://bootsfaces.net/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+	<h:head>
+		<style type="text/css">
+#TRConfigPanel_shadow {
+	width: 60% !important;
+}
+
+.rf-pp-cntr {
+	width: 70% !important;
+}
+
+.rf-pick-btn {
+	width: 100%;
+	white-space: nowrap;
+	background-color: #337AB7;
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #337AB7;
+	display: inline-block;
+	vertical-align: top;
+	cursor: pointer;
+	color: white;
+	background-image: none;
+	text-align: left;
+}
+
+.rf-pick {
+	border-radius: 5px;
+	margin: 15px;
+}
+
+.rf-pick-src-cptn, .rf-pick-tgt-cptn {
+	color: white;
+	background-color: #2e6da4;
+}
+
+.rf-pick-lst {
+	background-color: white;
+}
+
+.rf-pick-sel {
+	width: 100%;
+	background-color: #337AB7;
+	border-width: 1px;
+	border-style: dotted;
+	border-color: #000000;
+}
+
+.ui-panel .ui-panel-titlebar {
+	background-color: #337AB7;
+}
+
+.rf-pick-src, .rf-pick-tgt {
+	margin: 5px;
+	height: 120px;
+	border-radius: 5px;
+	border: 2px solid #337AB7;
+}
+
+button[disabled], input[type="reset"][disabled], input[type="submit"][disabled],
+	input[type="button"][disabled] {
+	color: #337AB7;
+	border-color: #cccccc;
+	background-color: #cccccc;
+	background-image: none;
+}
+
+button:hover, input[type="reset"]:hover, input[type="submit"]:hover,
+	input[type="button"]:hover {
+	background-color: #337AB7;
+	color: white;
+}
+
+button, input[type="reset"], input[type="submit"], input[type="button"]
+	{
+	border-width: 1px;
+	border-color: #C0C0C0;
+	font-size: 11px;
+	font-family: Arial, Verdana, sans-serif;
+	background-image: none;
+	color: #FFFFFF;
+	background-color: #337AB7;
+}
+</style>
+	</h:head>
+	<rich:popupPanel id="TRConfigPanel"
+		onmaskclick="#{rich:component('TRConfigPanel')}.hide()"
+		keepVisualState="true" autosized="true" zindex="2000" top="30">
+		<f:facet name="header">
+			<h:outputText
+				value="#{msgs['trustmanager.relyingPartyConfiguration']}" />
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="/img/close.gif" styleClass="hidelink"
+				style="cursor:pointer"
+				onclick="#{rich:component('TRConfigPanel')}.hide(); return false;" />
+		</f:facet>
+		<h:form>
+			<div class="row" id="RelyingPartyMenu"
+				style="margin: 10px; margin-bottom: 0px;">
+				<rich:pickList id="profileConfigurationSelection" var="profile"
+					value="#{relyingPartyAction.profileConfigurations}"
+					listsHeight="150" listWidth="330"
+					sourceCaption="#{msgs['trustmanager.availableProfileConfigurations']}"
+					targetCaption="#{msgs['trustmanager.selectedProfileConfigurations']}">
+					<f:selectItems
+						value="#{relyingPartyAction.availableProfileConfigurations}"
+						var="item" itemValue="#{item}" itemLabel="#{item}" />
+					<f:converter converterId="profileConfigurationConverter" />
+					<a4j:ajax event="change" render="ProfileConfigurationConfigMenu" />
+					<rich:column>
+						<f:facet name="header">Name</f:facet>
+						#{profile}
+					</rich:column>
+				</rich:pickList>
+				<h:panelGroup id="ProfileConfigurationConfigMenu"
+					style="heihgt: 50%; width: 100%;" layout="block">
+					<p:panel id="panel1" header="SAML 2 SSO Profile" toggleable="true"
+						collapsed="true" toggleableHeader="true"
+						rendered="#{relyingPartyAction.isProfileConfigurationSelected('SAML2SSO')}">
+						<ui:decorate
+							template="/WEB-INF/incl/trustmanager/profileConfiguration/saml2sso.xhtml">
+							<ui:param name="_relyingPartyAction"
+								value="#{relyingPartyAction}" />
+							<ui:param name="_ssoProfile"
+								value="#{relyingPartyAction.getProfileConfiguration('SAML2SSO')}" />
+						</ui:decorate>
+					</p:panel>
+					<p:panel id="panel2" header="SAML 2 Logout Profile"
+						toggleable="true" collapsed="true" toggleableHeader="true"
+						rendered="#{relyingPartyAction.isProfileConfigurationSelected('SAML2Logout')}">
+						<ui:decorate
+							template="/WEB-INF/incl/trustmanager/profileConfiguration/saml2logout.xhtml">
+							<ui:param name="_relyingPartyAction"
+								value="#{relyingPartyAction}" />
+						</ui:decorate>
+					</p:panel>
+					<p:panel id="panel3" hearder="SAML 2 Artifact Resolution"
+						toggleable="true" collapsed="true" toggleableHeader="true"
+						rendered="#{relyingPartyAction.isProfileConfigurationSelected('SAML2ArtifactResolution')}">
+						<ui:decorate
+							template="/WEB-INF/incl/trustmanager/profileConfiguration/saml2ar.xhtml">
+							<ui:param name="_relyingPartyAction"
+								value="#{relyingPartyAction}" />
+						</ui:decorate>
+					</p:panel>
+					<p:panel id="panel4" title="SAML 2 Attribute Query"
+						toggleable="true" collapsed="true" toggleableHeader="true"
+						rendered="#{relyingPartyAction.isProfileConfigurationSelected('SAML2AttributeQuery')}">
+						<ui:decorate
+							template="/WEB-INF/incl/trustmanager/profileConfiguration/saml2aq.xhtml">
+							<ui:param name="_relyingPartyAction"
+								value="#{relyingPartyAction}" />
+						</ui:decorate>
+					</p:panel>
+				</h:panelGroup>
+			</div>
+			<div class="row" id="relyingPartyUpdate"
+				style="margin: 10px; margin-top: 0px;">
+				<a4j:commandButton value="#{msgs['trustmanager.save']}"
+					action="#{relyingPartyAction.saveFilters}" class="btn-primary"
+					oncomplete="#{rich:component('TRConfigPanel')}.hide()"
+					render="RelyingPartyMenu" />
+				<p:spacer height="10" width="10" />
+				<a4j:commandButton value="#{msgs['trustmanager.back']}"
+					class="btn-primary"
+					onclick="#{rich:component('TRConfigPanel')}.hide()"
+					immediate="true" />
+			</div>
+		</h:form>
+	</rich:popupPanel>
+</ui:composition>

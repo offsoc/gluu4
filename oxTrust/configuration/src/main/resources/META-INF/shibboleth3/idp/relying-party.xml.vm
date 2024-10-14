@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+                           
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+
+    <!--
+    Unverified RP configuration, defaults to no support for any profiles. Add <ref> elements to the list
+    to enable specific default profile settings (as below), or create new beans inline to override defaults.
+    
+    "Unverified" typically means the IdP has no metadata, or equivalent way of assuring the identity and
+    legitimacy of a requesting system. To run an "open" IdP, you can enable profiles here.
+    -->
+    <bean id="shibboleth.UnverifiedRelyingParty" parent="RelyingParty" />
+
+    <!--
+    Default configuration, with default settings applied for all profiles, and enables
+    the attribute-release consent flow.
+    -->
+    <bean id="SignNoIntegrity" class="org.opensaml.profile.logic.NoIntegrityMessageChannelPredicate" />
+    <bean id="EncryptNoConfidentiality" class="org.opensaml.profile.logic.NoConfidentialityMessageChannelPredicate" />
+
+    <bean id="shibboleth.DefaultRelyingParty" parent="RelyingParty">
+        <property name="profileConfigurations">
+            <list>
+                <!-- SAML 1.1 and SAML 2.0 AttributeQuery are disabled by default. -->
+                <!--
+                <bean parent="Shibboleth.SSO" p:postAuthenticationFlows="attribute-release" />
+                <ref bean="SAML1.AttributeQuery" />
+                <ref bean="SAML1.ArtifactResolution" />
+                -->
+                <bean parent="SAML2.SSO"
+                      p:includeAttributeStatement="true"
+                      p:assertionLifetime="PT5M"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false"
+                      p:encryptNameIDs="false"
+		                  p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality" 
+		                  p:postAuthenticationFlows="#{{'gluu-release-attributes-post-processor'}}" />
+
+                <bean parent="SAML2.ECP"
+                      p:includeAttributeStatement="true"
+                      p:assertionLifetime="PT5M"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false"
+                      p:encryptNameIDs="false"
+                      p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality" />
+
+                <bean parent="SAML2.AttributeQuery"
+                      p:assertionLifetime="PT5M"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false"
+                      p:encryptNameIDs="false"
+                      p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality" />
+
+                <bean parent="SAML2.ArtifactResolution"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false"
+                      p:encryptNameIDs="false"
+                      p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality" />
+
+                <bean parent="Shibboleth.SSO"
+                      p:includeAttributeStatement="false"
+                      p:assertionLifetime="PT5M"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false" />
+
+                <bean parent="SAML2.Logout"
+                      p:assertionLifetime="PT5M"
+                      p:signResponsesPredicate-ref="SignNoIntegrity"
+                      p:signAssertions="false"
+                      p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality" />
+
+                <ref bean="Liberty.SSOS" />
+                #if ($casParams.enabled)
+                <ref bean="CAS.LoginConfiguration" />
+                <ref bean="CAS.ProxyConfiguration" />
+                <ref bean="CAS.ValidateConfiguration" />
+                #end
+            </list>
+        </property>
+    </bean>
+	
+    <!-- Container for any overrides you want to add. -->
+    <util:list id="shibboleth.RelyingPartyOverrides">
+        <!--
+        Override example that identifies a single RP by name and configures it
+        for SAML 2 SSO without encryption. This is a common "vendor" scenario.
+        -->
+
+#foreach( $trustRelationship in $trustParams.trusts )
+
+        <!-- TrustRelationship -->
+        #set ($profileConfigMap = $trustRelationship.profileConfigurations)
+        <!--#if(!$profileConfigMap.isEmpty())-->
+
+        #set($entityId = $trustRelationship.getEntityId())
+        #set($relyingPartyId = $StringHelper.removePunctuation($trustRelationship.inum))
+
+        <bean parent="RelyingPartyByName" id="$relyingPartyId" c:relyingPartyIds="$entityId">
+            <property name="profileConfigurations">
+                <list>
+            #if($trustRelationship.specificRelyingPartyConfig and (not $trustRelationship.isFederation()))
+                #foreach ($mapEntry in $profileConfigMap.entrySet())
+
+                    #set($profileConfig = $mapEntry.value)
+
+                    #if($mapEntry.key == "SAML2SSO")
+
+                    <bean parent="SAML2.SSO"
+                          p:includeAttributeStatement="$profileConfig.includeAttributeStatement"
+                          p:assertionLifetime="$profileConfig.assertionLifetime"
+                          p:postAuthenticationFlows="#{{'gluu-release-attributes-post-processor'}}"
+                          p:inboundInterceptorFlows="#{ {'gluu-populate-context'} }"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if ($profileConfig.encryptNameIds == 'conditional')
+                          p:encryptNameIDsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptNameIds = "#if ($profileConfig.encryptNameIds == 'always')true#{else}false#end")
+                          p:encryptNameIDs="$encryptNameIds"
+                        #end
+                        #if ($profileConfig.encryptAssertions == 'conditional')
+                          p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptAssertions = "#if ($profileConfig.encryptAssertions == 'always')true#{else}false#end")
+                          p:encryptAssertions="$encryptAssertions"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+                        #if($profileConfig.nameIDFormatPrecedence != '')
+                          p:nameIDFormatPrecedence="$profileConfig.nameIDFormatPrecedence"
+                        #end >
+                        #if ($profileConfig.defaultAuthenticationMethod != 'none')
+                        <property name="defaultAuthenticationMethods">
+                            <list>
+                                <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="$profileConfig.defaultAuthenticationMethod" />
+                            </list>
+                        </property>
+                        #end
+                    </bean>
+                    #elseif($mapEntry.key == "SAML2Logout")
+
+                    <bean parent="SAML2.Logout"
+                          p:assertionLifetime="$profileConfig.assertionLifetime"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if ($profileConfig.encryptAssertions == 'conditional')
+                          p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptAssertions = "#if ($profileConfig.encryptAssertions == 'always')true#{else}false#end")
+                          p:encryptAssertions="$encryptAssertions"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+                    #elseif($mapEntry.key == "SAML2AttributeQuery")
+
+                    <bean parent="SAML2.AttributeQuery"
+                          p:assertionLifetime="$profileConfig.assertionLifetime"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if ($profileConfig.encryptNameIds == 'conditional')
+                          p:encryptNameIDsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptNameIds = "#if ($profileConfig.encryptNameIds == 'always')true#{else}false#end")
+                          p:encryptNameIDs="$encryptNameIds"
+                        #end
+                        #if ($profileConfig.encryptAssertions == 'conditional')
+                          p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptAssertions = "#if ($profileConfig.encryptAssertions == 'always')true#{else}false#end")
+                          p:encryptAssertions="$encryptAssertions"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+                    #elseif($mapEntry.key == "SAML2ArtifactResolution")
+
+                    <bean parent="SAML2.ArtifactResolution"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if ($profileConfig.encryptNameIds == 'conditional')
+                          p:encryptNameIDsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptNameIds = "#if ($profileConfig.encryptNameIds == 'always')true#{else}false#end")
+                          p:encryptNameIDs="$encryptNameIds"
+                        #end
+                        #if ($profileConfig.encryptAssertions == 'conditional')
+                          p:encryptAssertionsPredicate-ref="EncryptNoConfidentiality"
+                        #{else}
+                            #set($encryptAssertions = "#if ($profileConfig.encryptAssertions == 'always')true#{else}false#end")
+                          p:encryptAssertions="$encryptAssertions"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+                    #elseif($mapEntry.key == "ShibbolethSSO")
+
+                    <bean parent="Shibboleth.SSO"
+                          p:includeAttributeStatement="$profileConfig.includeAttributeStatement"
+                          p:assertionLifetime="$profileConfig.assertionLifetime"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+                    #elseif($mapEntry.key == "SAML1AttributeQuery")
+
+                    <bean parent="SAML1.AttributeQuery"
+                          p:assertionLifetime="$profileConfig.assertionLifetime"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+                    #elseif($mapEntry.key == "SAML1ArtifactResolution")
+
+                    <bean parent="SAML1.ArtifactResolution"
+                        #if ($profileConfig.signResponses == 'conditional')
+                          p:signResponsesPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signResponses = "#if ($profileConfig.signResponses == 'always')true#{else}false#end")
+                          p:signResponses="$signResponses"
+                        #end
+                        #if ($profileConfig.signAssertions == 'conditional')
+                          p:signAssertionsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signAssertions = "#if ($profileConfig.signAssertions == 'always')true#{else}false#end")
+                          p:signAssertions="$signAssertions"
+                        #end
+                        #if ($profileConfig.signRequests == 'conditional')
+                          p:signRequestsPredicate-ref="SignNoIntegrity"
+                        #{else}
+                            #set($signRequests = "#if ($profileConfig.signRequests == 'always')true#{else}false#end")
+                          p:signRequests="$signRequests"
+                        #end
+                        #if($profileConfig.signingCredentialRef)
+                          p:signingCredentialRef="$profileConfig.signingCredentialRef"
+                        #end
+
+                    />
+
+                    #end
+                #end
+            #end
+                </list>
+            </property>
+        </bean>
+        <!-- #end -->
+#end
+
+    </util:list>
+
+</beans>
+
+

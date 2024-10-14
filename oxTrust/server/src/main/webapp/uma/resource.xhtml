@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('uma', 'access')}" />
+		<f:viewParam name="searchPattern"
+			value="#{umaInventoryAction.searchPattern}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{umaInventoryAction.start}" onPostback="false" />
+	</f:metadata>
+
+	<ui:define name="body">
+		<section class="content-header">
+			<h1 style="color: #333;">
+				#{msgs['uma.uma']} <small> <i class="fa fa-caret-right"
+					style="color: #333 !important;" />
+					#{msgs['uma.resourcesAndScopes']}
+				</small>
+			</h1>
+			<ol class="breadcrumb">
+				<li><a href="#{request.contextPath}/home.htm"> <i
+						class="fa fa-home" />
+				</a></li>
+				<li class="organization/configuration"><a
+					href="#{request.contextPath}/uma/resource.htm">#{msgs['uma.resourcesAndScopes']}</a>
+				</li>
+			</ol>
+		</section>
+
+		<section class="content">
+			<div class="row">
+				<div class="col-xs-12">
+					<b:panel title="Uma Resources List" look="primary" iconAwesome="fa-list" collapsible="false">
+						<h:form>
+							<div class="nav-tabs-custom" style="margin-bottom: 0px;">
+								<div class="tab-content">
+									<div class="tab-pane active" id="resourceTab">
+										<b:link style-class="btn btn-primary" icon="plus"
+											outcome="/uma/resource/modifyResource"
+											value="#{msgs['uma.addResourceSet']}"
+											includeViewParams="false" />
+										<p:spacer height="8" />
+										<ox:decorate id="searchPattern"
+											label="#{msgs['uma.searchKey']}" style="height:60px;">
+											<h:inputText
+												alt="Search parameters for UMA resource set like Inum, Display Name"
+												id="searchPatternId" maxlength="30" placeholder="Search Key"
+												size="30" style="width:50%;float: left;"
+												styleClass="form-control searchBoxClass"
+												value="#{umaInventoryAction.searchPattern}" />
+											<b:commandButton action="#{umaInventoryAction.search}"
+												render="resourcesListId, scopesListId"
+												style="float: left;margin-left:5px;"
+												styleClass="btn btn-primary searchButtonClass"
+												value="#{msgs['uma.search']}" iconAwesome="fa-search"/>
+										</ox:decorate>
+										<b:dataTable id="resourcesListId" style="text-align:center;width:100%;"
+											responsive="true"
+											rendered="#{umaInventoryAction.resourcesList.size() gt 0}"
+											value="#{umaInventoryAction.resourcesList}" var="_row"
+											styleClass="resourceScopeListClass" print="true" excel="true"
+											csv="true" pdf="true" select="true">
+											<b:dataTableColumn label="#{msgs['uma.name']}">
+												<h:link includeViewParams="false"
+													outcome="/uma/resource/modifyResource" value="#{_row.name}">
+													<f:param name="resource" value="#{_row.id}" />
+												</h:link>
+											</b:dataTableColumn>
+											<b:dataTableColumn value="#{_row.id}"
+												label="#{msgs['uma.id']}" />
+											<b:dataTableColumn label="#{msgs['uma.scopes']}">
+												<ui:repeat value="#{umaInventoryAction.getScopes(_row)}"
+													var="item">
+													<b:label text="#{item}" severity="info"
+														style="margin-right:2px;" />
+												</ui:repeat>
+											</b:dataTableColumn>
+											<b:dataTableColumn value="#{_row.iconUri}" order="asc"
+												label="#{msgs['uma.iconURI']}" />
+										</b:dataTable>
+									</div>
+								</div>
+							</div>
+						</h:form>
+					</b:panel>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    This file is an EXAMPLE configuration file. While the configuration
+    presented in this example file is semi-functional, it isn't very
+    interesting. It is here only as a starting point for your deployment
+    process.
+    
+    Very few attribute definitions and data connectors are demonstrated,
+    and the data is derived statically from the logged-in username and a
+    static example connector.
+
+    Attribute-resolver-full.xml contains more examples of attributes,
+    encoders, and data connectors. Deployers should refer to the Shibboleth
+    documentation for a complete list of components and their options.
+-->
+<AttributeResolver
+        xmlns="urn:mace:shibboleth:2.0:resolver" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:resolver http://shibboleth.net/schema/idp/shibboleth-attribute-resolver.xsd">
+
+
+    <!-- ========================================== -->
+    <!--      Attribute Definitions                 -->
+    <!-- ========================================== -->
+
+    <!--
+    The EPPN is the "standard" federated username in higher ed.
+    For guidelines on the implementation of this attribute, refer
+    to the Shibboleth and eduPerson documentation. Above all, do
+    not expose a value for this attribute without considering the
+    long term implications. 
+    -->
+
+#foreach( $attribute in $attrParams.attributes )
+#if( ! ($attribute.name.equals('transientId') or $attribute.name.equals('persistentId') ) )
+#if( $attribute.name.equals('eppnForNIH') )
+    <AttributeDefinition id="eduPersonPrincipalName" xsi:type="Scoped" scope="%{idp.scope}">
+        <InputDataConnector ref="siteDataConnector" attributeNames="uid"/>
+        <!-- AttributeEncoder xsi:type="SAML2ScopedString" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.6" friendlyName="eduPersonPrincipalName" encodeType="false" / -->
+    </AttributeDefinition
+#else
+    <AttributeDefinition xsi:type="Simple" id="$attribute.name">
+        <InputDataConnector ref="siteDataConnector" attributeNames="$attribute.name"/>
+        <!-- AttributeEncoder xsi:type="SAML2String" name="$attrParams.attributeSAML2Strings.get($attribute.name)" friendlyName="$attribute.name" encodeType="false" / -->
+    </AttributeDefinition>
+#end
+#end
+#end
+
+#foreach( $attribute in $resovlerParams.attributes )
+    <AttributeDefinition xsi:type="Simple" id="$attribute.name">
+        <InputDataConnector ref="siteDataConnector" attributeNames="$attribute.name"/>
+        <!-- AttributeEncoder xsi:type="SAML2String" name="$attrParams.attributeSAML2Strings.get($attribute.name)" friendlyName="$attribute.name" encodeType="false" / -->
+    </AttributeDefinition>
+#end
+
+    <!-- ========================================== -->
+    <!--      Data Connectors                       -->
+    <!-- ========================================== -->
+
+#if( $resovlerParams.persistenceType.equals('couchbase') )
+    <DataConnector id="siteDataConnector" xsi:type="RelationalDatabase">
+        <BeanManagedConnection>siteDataSource</BeanManagedConnection>
+        <QueryTemplate>
+            <![CDATA[
+                %{idp.attribute.resolver.N1QL.searchFilter}
+            ]]>
+        </QueryTemplate>
+
+    </DataConnector>
+#elseif( $resovlerParams.persistenceType.equals('ldap') || $resovlerParams.persistenceType.equals('hybrid') )
+    <DataConnector id="siteDataConnector" xsi:type="LDAPDirectory"
+                   ldapURL="%{idp.attribute.resolver.LDAP.ldapURL}"
+                   baseDN="%{idp.attribute.resolver.LDAP.baseDN}"
+                   principal="%{idp.attribute.resolver.LDAP.bindDN}"
+                   principalCredential="%{idp.attribute.resolver.LDAP.bindDNCredential}"
+                   useStartTLS="%{idp.attribute.resolver.LDAP.useStartTLS:true}"
+                   trustFile="%{idp.attribute.resolver.LDAP.trustCertificates}" >
+        <FilterTemplate>
+            <![CDATA[
+                %{idp.attribute.resolver.LDAP.searchFilter}
+            ]]>
+        </FilterTemplate>
+    </DataConnector>
+#elseif( $resovlerParams.persistenceType.equals('sql') )
+    <DataConnector id="siteDataConnector" xsi:type="RelationalDatabase">
+        <BeanManagedConnection>siteDataSource</BeanManagedConnection>
+        <QueryTemplate>
+            <![CDATA[
+                %{idp.attribute.resolver.sql.searchFilter}
+            ]]>
+        </QueryTemplate>
+    </DataConnector>
+#else
+    <!-- an unsupported persistence type was specified -->
+    <!-- no data connector configuration generated -->
+#end
+
+</AttributeResolver>

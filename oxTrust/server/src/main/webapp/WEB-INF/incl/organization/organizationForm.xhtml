@@ -1,0 +1,466 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:gluufn="http://www.gluu.org/jsf/functions"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<h:outputStylesheet>
+        .addConfig {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .removeConfig {
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .half{
+			width: 50%;
+			height: 4px;
+			border: 1px solid #999;
+			vertical-align: top;
+		}
+		
+		.configurationSheet{
+			border: 1px solid #999;
+		}
+    </h:outputStylesheet>
+
+	<h:outputStylesheet>
+            #colorSelector div {
+                position: relative;
+                width: 36px;
+                height: 36px;
+                background: url(../img/colorpicker/select2.png);
+            }
+        </h:outputStylesheet>
+	<script type="text/javascript"
+		src="#{oxTrustConfigurationService.jsLocation}/colorpicker.js" />
+	<script type="text/javascript"
+		src="#{oxTrustConfigurationService.jsLocation}/jquery.cluetip.js" />
+	<link type="text/css" rel="stylesheet"
+		href="#{oxTrustConfigurationService.cssLocation}/colorpicker.css" />
+	<h:outputScript>
+	function loadColorPicker(){
+        $('#colorSelector').ColorPicker({
+            color: '#{gluufn:getColor(_organization.themeColor, "00ff00")}',
+            onSubmit: function(hsb, hex, rgb, el) {
+                $(el).val(hex);
+                $(el).ColorPickerHide();
+            },
+            onChange: function (hsb, hex, rgb) {
+                $('#colorSelector div').css('backgroundColor', '#' + hex);
+                $('input[id*=themeColor]').val(hex);
+            }
+        });
+    }
+    function addToBodyOnload(oFunction) {
+	    var existingOnload = window.onload;
+	    if (typeof window.onload != 'function'){
+	    	window.onload = oFunction;
+	    }else{
+	    	window.onload = function () { oFunction(); existingOnload(); }
+	    } 
+	}
+	addToBodyOnload(loadColorPicker);
+    $(document).keypress( function(event){
+          if (event.which == '13') {
+          event.preventDefault();
+         }
+     });   
+    </h:outputScript>
+	<h:form id="organizationForm" autocomplete="off">
+		<div class="row" style="margin: 1px;">
+			<b:panel title="Organization" look="primary"
+				iconAwesome="fa-university" collapsible="false">
+				<div class="nav-tabs-custom" style="margin-bottom: 0px;">
+					<ul class="nav nav-tabs" id="organizationFormtab">
+						<li><a href="#sys-config" data-bs-toggle="tab" class="active">#{msgs['organizationForm.systemConfiguration']}</a></li>
+						<li><a href="#smtp-server" data-bs-toggle="tab">#{msgs['organizationForm.smtpServerConfiguration']}</a></li>
+						<li><a href="#ox-trust" data-bs-toggle="tab">Organization
+								Settings</a></li>
+						<li><a href="#libs" data-bs-toggle="tab">Extra libraries</a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="sys-config">
+							<h:panelGroup layout="block" style="width:100%;">
+								<ox:decorate id="passwordReset"
+									label="#{msgs['organizationForm.selfServicePasswordReset']}">
+									<h:selectBooleanCheckbox
+										value="#{_configuration.passwordResetAllowed}"
+										styleClass="rounded passwordResetSelectBox"
+										id="passwordResetId" />
+								</ox:decorate>
+								<ox:decorate id="scimEnabledState"
+									label="#{msgs['organizationForm.scimSupport']}">
+									<h:selectBooleanCheckbox value="#{_configuration.scimEnabled}"
+										styleClass="rounded scimEnableStateSelectBox"
+										id="scimEnabledStateId" />
+								</ox:decorate>
+								<ox:decorate id="passportEnabledState"
+									label="#{msgs['organizationForm.passportSupport']}">
+									<h:selectBooleanCheckbox
+										value="#{_configuration.passportEnabled}"
+										styleClass="rounded passportEnableStateSelectBox"
+										id="passportEnabledStateId" />
+								</ox:decorate>
+								<ox:decorate id="samlEnabledState"
+									label="#{msgs['organizationForm.samlSupport']}">
+									<h:selectBooleanCheckbox value="#{_configuration.samlEnabled}"
+										styleClass="rounded samlSelectBox" id="samlEnabledStateId" />
+								</ox:decorate>
+								<ox:decorate id="radiusEnabledState"
+									label="#{msgs['organizationForm.radiusSupport']}">
+									<h:selectBooleanCheckbox
+										value="#{_configuration.radiusEnabled}"
+										styleClass="rounded raduisSelectBox" id="radiusEnabledStateId" />
+								</ox:decorate>
+								<ox:decorate id="profileManagment"
+									label="#{msgs['organizationForm.userCanEditProfile']}">
+									<h:selectBooleanCheckbox
+										value="#{_configuration.profileManagment}"
+										styleClass="rounded profileManagmentSelectBox"
+										id="profileManagmentStateId" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.contactEmail']}">
+									<h:inputText id="email" required="true"
+										value="#{_organizationAction.contactEmail}"
+										styleClass="rounded form-control contactEmailTextBox"
+										validatorMessage="Please provide a valid email address">
+										<f:validateRegex
+											pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+									</h:inputText>
+									<p:message for="email" />
+								</ox:decorate>
+								<ox:decorate id="maxLogSize"
+									label="#{msgs['organizationForm.maxLogSize']}">
+									<h:inputText value="#{_configuration.maxLogSize}"
+										required="true"
+										styleClass="rounded form-control maxLogSizeTextBox" size="10" />
+								</ox:decorate>
+							</h:panelGroup>
+						</div>
+						<div class="tab-pane" id="smtp-server">
+							<h:panelGroup layout="block" style="width:100%;">
+								<ox:decorate label="#{msgs['organizationForm.smtpHost']}">
+									<h:inputText value="#{_smtp.host}"
+										styleClass="form-control smtpHostTextBox" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.fromName']}">
+									<h:inputText value="#{_smtp.fromName}"
+										styleClass="form-control fromNameTextBox" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.fromEmailAddress']}">
+									<h:inputText value="#{_smtp.fromEmailAddress}"
+										styleClass="form-control fromEmailAddressTextBox" />
+								</ox:decorate>
+								<ox:decorate id="requiresAuthenticationCheckBox"
+									label="#{msgs['organizationForm.requiresAuthentication']}">
+									<h:selectBooleanCheckbox
+										styleClass="requiresAuthenticationCheckBox"
+										value="#{_smtp.requiresAuthentication}" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.smtpUserName']}">
+									<h:inputText value="#{_smtp.userName}"
+										styleClass="form-control smtpUserNameTextBox" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.smtpPassword']}">
+									<h:inputSecret value="#{_organizationAction.smtpPasswordDecrypted}" autocomplete="off" redisplay="true"
+										styleClass="form-control smtpPasswordTextBox" />
+								</ox:decorate>
+								<ox:decorate id="connectProtection" label="#{msgs['organizationForm.smtpConnectProtection']}">
+									<h:selectOneMenu styleClass="form-control connectProtectionSelectOneMenu"
+										value="#{_smtp.connectProtection}" required="true"
+										id="connectPtotectionTypeId" converter="omnifaces.GenericEnumConverter">
+										<f:selectItems
+											value="#{_smtp.connectProtectionList}"
+											var="_type" itemLabel="#{_type.displayName}" />
+										<a4j:ajax event="change" render="metadataType, spSingleGroup"
+											execute="@this" />
+									</h:selectOneMenu>
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.trustserver']}">
+									<h:selectBooleanCheckbox value="#{_smtp.serverTrust}"
+										styleClass="trustserverCheckBox" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.smtpPort']}">
+									<h:inputText value="#{_smtp.port}"
+										styleClass="form-control smtpPortTextBox" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.keyStore']}">
+									<h:inputText value="#{_smtp.keyStore}"
+										styleClass="form-control" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.keyStorePassword']}">
+									<h:inputSecret value="#{_organizationAction.keyStorePasswordDecrypted}" autocomplete="off" redisplay="true"
+										styleClass="form-control" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.keyStoreAlias']}">
+									<h:inputText value="#{_smtp.keyStoreAlias}"
+										styleClass="form-control" />
+								</ox:decorate>
+								<ox:decorate label="#{msgs['organizationForm.signingAlgorithm']}">
+									<h:inputText value="#{_smtp.signingAlgorithm}"
+										styleClass="form-control" />
+								</ox:decorate>
+								<h:commandButton
+									value="#{msgs['organizationForm.testConfiguration']}"
+									styleClass="btn btn-success verifyButton"
+									action="#{updateOrganizationAction.verifySmtpConfiguration}" />
+							</h:panelGroup>
+						</div>
+						<div class="tab-pane" id="ox-trust">
+							<h:panelGroup style="width:100%;">
+								<ox:decorate id="displayName"
+									label="#{msgs['organizationForm.organizationName']}">
+									<h:inputText value="#{_organization.displayName}" size="100"
+										styleClass="form-control orgNameTextBox" style="width:100%;" />
+								</ox:decorate>
+								<ui:param name="_managerGroup"
+									value="#{gluufn:getTypedEntry(_organization.managerGroup, 'org.gluu.oxtrust.model.GluuGroup')}" />
+								<ui:fragment  rendered="#{_managerGroup != null}">
+									<ox:decorate id="managerGroup"
+										label="#{msgs['organizationForm.managerGroup']}">
+										<h:link includeViewParams="false" outcome="/group/updateGroup"
+											value="#{_managerGroup.displayName}" styleClass="GroupLinkBox">
+											<f:param name="inum" value="#{_managerGroup.inum}" />
+										</h:link>
+									</ox:decorate>
+								</ui:fragment>
+								<b:panel title="oxTrust Logo/Favicon" look="primary"
+									iconAwesome="fa-sliders">
+									<div class="row">
+										<div class="col-sm-6 col-lg-6" style="padding-right: 15px !important;">
+											<b:panel id="oxTrustLogoPanelId" title="Current oxTrust Logo"
+												look="success" collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-4 col-lg-4"
+														style="padding: 0px; margin: 5px; max-height: 70px;">
+														<img
+															src="#{request.contextPath}/servlet/logo?scale=large#{_organizationAction.getRandonRnd()}"
+															height="50" width="50" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-sm-12 col-lg-12" style="padding: 0px;">
+														<p:fileUpload id="oxTrustLogo"
+															listener="#{_organizationAction.setOxTrustLogoImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															styleClass="oxTrustLogo" style="width:100% !important;"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+										<div class="col-sm-6 col-lg-6">
+											<b:panel id="oxTrustFaviconPanelId"
+												title="Current oxTrust Favicon" look="success"
+												collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-4 col-lg-4"
+														style="padding: 0px; margin: 5px; max-height: 70px;">
+														<img
+															src="#{request.contextPath}/servlet/favicon?preview=true#{_organizationAction.getRandonRnd()}"
+															height="50" width="50" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-sm-12 col-lg-12"
+														style="padding: 0px; margin: 2px;">
+														<p:fileUpload id="oxTrustFavicon"
+															listener="#{_organizationAction.setOxTrustFaviconImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															styleClass="oxTrustFavicon"
+															style="width:100% !important;"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+									</div>
+								</b:panel>
+								<b:panel title="oxAuth Logo/Favicon" look="primary"
+									iconAwesome="fa-sliders">
+									<div class="row">
+										<div class="col-sm-6 col-lg-6" style="padding-right: 15px !important;">
+											<b:panel id="oxAuthLogoPanelId" title="Current oxAuth Logo"
+												look="success" collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-4 col-lg-4"
+														style="padding: 0px; margin: 5px; max-height: 70px;">
+														<img
+															src="#{request.contextPath}/servlet/oxauth/logo?scale=large#{_organizationAction.getRandonRnd()}"
+															height="50" width="50" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-sm-12 col-lg-12"
+														style="padding: 0px;">
+														<p:fileUpload id="oxAuthLogo"
+															listener="#{_organizationAction.setOxAuthLogoImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															styleClass="oxAuthLogo" style="width:100% !important;"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+										<div class="col-sm-6 col-lg-6">
+											<b:panel id="oxAuthFaviconPanelId"
+												title="Current oxAuth Favicon" look="success"
+												collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-4 col-lg-4"
+														style="padding: 0px; margin: 2px; max-height: 70px;">
+														<img
+															src="#{request.contextPath}/servlet/oxauth/favicon?value#{_organizationAction.getRandonRnd()}"
+															height="50" width="50" />
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-sm-12 col-lg-12"
+														style="padding: 0px; max-height: 70px;">
+														<p:fileUpload id="oxAuthFavicon"
+															listener="#{_organizationAction.setOxAuthFaviconImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															styleClass="oxAuthFavicon" style="width:100% !important;"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+									</div>
+								</b:panel>
+								<b:panel title="IDP Logo/Favicon" look="primary"
+									iconAwesome="fa-sliders" rendered="false">
+									<div class="row">
+										<div class="col-sm-6 col-lg-6">
+											<b:panel id="idpLogoPanelId" title="Current IDP Logo"
+												look="success" collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-3 col-lg-3"
+														style="padding: 0px; margin: 5px; max-height: 70px;">
+														<img height="50" width="50"
+															src="#{request.contextPath}/servlet/idp/logo" />
+													</div>
+													<div class="col-sm-8 col-lg-8"
+														style="padding: 0px; margin: 10px;">
+														<p:fileUpload id="idpLogo"
+															listener="#{_organizationAction.setIdpLogoImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															styleClass="idpLogo" style="width:100% !important;"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+										<div class="col-sm-6 col-lg-6">
+											<b:panel id="idpFaviconPanelId" title="Current IDP Favicon"
+												look="success" collapsible="true" collapsed="true">
+												<div class="row">
+													<div class="col-sm-3 col-lg-3"
+														style="padding: 0px; margin: 5px; max-height: 70px;">
+														<img height="50" width="50"
+															src="#{request.contextPath}/servlet/idp/favicon?preview=true" />
+													</div>
+													<div class="col-sm-8 col-lg-8"
+														style="padding: 0px; margin: 2px;">
+														<p:fileUpload id="idpFavicon"
+															listener="#{_organizationAction.setIdpFaviconImage}"
+															required="false" mode="advanced" dragDropSupport="false"
+															multiple="false" sizeLimit="1000000" fileLimit="1"
+															label="Select a file" validateContentType="true"
+															style="width:100% !important;" styleClass="idpFavicon"
+															allowTypes="/(\.|\/)(ico|jpeg|jpg|png)$/">
+														</p:fileUpload>
+													</div>
+												</div>
+											</b:panel>
+										</div>
+									</div>
+								</b:panel>
+							</h:panelGroup>
+						</div>
+						<div class="tab-pane" id="libs">
+							<b:panel id="oxTrust" title="Add Lib to Oxtrust" look="success"
+								collapsible="true" collapsed="true">
+								<p:fileUpload id="oxtrustLibs"
+									listener="#{_organizationAction.addNewOxtrustLib}"
+									required="false" mode="advanced" dragDropSupport="false"
+									multiple="false" sizeLimit="10000000" fileLimit="1"
+									label="Select a file" validateContentType="true"
+									styleClass="OxTrustLibrairy" style="width:100% !important;"
+									allowTypes="/(\.|\/)(jar)$/">
+								</p:fileUpload>
+							</b:panel>
+							<b:panel id="oxAuth" title="Add Lib to OxAuth" look="success"
+								collapsible="true" collapsed="true">
+								<p:fileUpload id="oxauthLibs"
+									listener="#{_organizationAction.addNewOxauthLib}"
+									required="false" mode="advanced" dragDropSupport="false"
+									multiple="false" sizeLimit="10000000" fileLimit="1"
+									label="Select a file" validateContentType="true"
+									styleClass="oxAuthLibrairy" style="width:100% !important;"
+									allowTypes="/(\.|\/)(jar)$/">
+								</p:fileUpload>
+							</b:panel>
+						</div>
+					</div>
+				</div>
+				<ui:insert name="controlButttons" />
+			</b:panel>
+		</div>
+	</h:form>
+	<script>
+		$('#organizationFormtab a').click(function(e) {
+			e.preventDefault();
+			$(this).tab('show');
+		});
+
+		// store the currently selected tab in the local storage
+		$("ul.nav-tabs > li > a").on(
+				"shown.bs.tab",
+				function(e) {
+					var id = $(e.target).attr("href").substr(1);
+					window.localStorage.setItem('organizationFormtab', id);
+					var storeValue = window.localStorage
+							.getItem('organizationFormtab');
+				});
+
+		// on load of the page: switch to the currently selected tab
+		$(document).ready(
+				function() {
+					var value = window.localStorage
+							.getItem('organizationFormtab');
+					if (value) {
+						var activeTab = "#";
+						activeTab = activeTab.concat(value);
+						$('#organizationFormtab a[href="' + activeTab + '"]')
+								.tab('show');
+					}
+				});
+	</script>
+</ui:composition>

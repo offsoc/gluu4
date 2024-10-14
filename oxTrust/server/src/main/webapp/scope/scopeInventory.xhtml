@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:b="http://bootsfaces.net/ui" xmlns:p="http://primefaces.org/ui"
+	xmlns:ox="http://xmlns.jcp.org/jsf/composite/ox"
+	xmlns:richext="http://xmlns.jcp.org/jsf/composite/richext"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/WEB-INF/incl/layout/newtemplate.xhtml">
+	<f:metadata>
+		<f:viewAction
+			action="#{permissionService.requestPermission('scope', 'access')}" />
+		<f:viewParam name="searchPattern"
+			value="#{searchScopeAction.searchPattern}" />
+		<f:viewAction action="#{conversationService.initConversation}" />
+		<f:viewAction action="#{searchScopeAction.start}"
+			if="#{searchScopeAction.scopeList.size() == 0}" onPostback="false" />
+	</f:metadata>
+	<ui:define name="body">
+		<section class="content">
+			<div id="formArea">
+				<div class="row">
+					<div class="col-xs-12">
+						<b:panel title="OpenID Connect Scopes List" look="primary"
+							iconAwesome="fa-list" collapsible="false">
+							<h:panelGroup>
+								<div class="row"
+									style="padding: 5px; margin-bottom: 5px; margin-left: 15px">
+									<b:link style-class="addScopeButtonClass btn btn-primary"
+										icon="plus" outcome="/scope/addScope" style="width: 9%;"
+										value="#{msgs['scope.addScope']}" includeViewParams="false" />
+								</div>
+								<p:spacer height="16" />
+								<h:form>
+									<ox:decorate hideLabel="true" id="searchPattern">
+										<div style="width: 100%; float: left; margin-left: 17px;">
+											<h:inputText
+												alt="search parameters for scope like inum,displayName"
+												id="searchPatternId" maxlength="30" size="30"
+												style="width:50%; float:left;"
+												styleClass="form-control searchBoxClass"
+												value="#{searchScopeAction.searchPattern}" />
+											<b:commandButton action="#{searchScopeAction.search}"
+												style="float:left;margin-left :3px;"
+												styleClass="btn btn-primary searchButtonClass"
+												value="Search" iconAwesome="fa-search" />
+										</div>
+									</ox:decorate>
+								</h:form>
+								<div class="row" style="width: 100%;">
+									<div class="box-body">
+										<h:form id="scopesFormId">
+											<b:dataTable id="scopesListId"
+												rendered="#{searchScopeAction.scopeList.size() gt 0}"
+												style="text-align:center;width:100%;" responsive="true"
+												value="#{searchScopeAction.scopeList}" var="clt"
+												print="true" excel="true" csv="true" pdf="true"
+												select="true">
+												<b:dataTableColumn label="#{msgs['scope.inum']}" header-style="font-size: 14px !important;">
+													<h:link includeViewParams="false"
+														outcome="/scope/updateScope" value="#{clt.inum}">
+														<f:param name="inum" value="#{clt.inum}" />
+													</h:link>
+												</b:dataTableColumn>
+												<b:dataTableColumn label="#{msgs['scope.displayName']}" header-style="font-size: 14px !important;"
+													value="#{clt.id eq null ? clt.displayName : clt.id}">
+												</b:dataTableColumn>
+												<b:dataTableColumn value="#{clt.description}" header-style="font-size: 14px !important;"
+													label="#{msgs['scope.description']}" />
+												<b:dataTableColumn label="#{msgs['scope.scopeType']}" header-style="font-size: 14px !important;"
+														value="#{clt.scopeType}" severity="primary" />
+											</b:dataTable>
+										</h:form>
+									</div>
+								</div>
+							</h:panelGroup>
+							<div class="box-footer">
+								<ui:insert name="controlButttons" />
+							</div>
+						</b:panel>
+					</div>
+				</div>
+			</div>
+		</section>
+	</ui:define>
+</ui:composition>
