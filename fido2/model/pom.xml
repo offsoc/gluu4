@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+ 	xmlns="http://maven.apache.org/POM/4.0.0"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>fido2-model</artifactId>
+	<name>Fido2 API Model</name>
+	<packaging>jar</packaging>
+	<url>https://www.gluu.org</url>
+
+	<parent>
+		<groupId>org.gluu</groupId>
+		<artifactId>fido2</artifactId>
+		<version>4.5.6-SNAPSHOT</version>
+
+	</parent>
+
+	<dependencies>
+			<!-- Gluu -->
+            <dependency>
+                <groupId>org.gluu</groupId>
+                <artifactId>gluu-orm-annotation</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.gluu</groupId>
+                <artifactId>gluu-orm-model</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.gluu</groupId>
+                <artifactId>oxauth-model</artifactId>
+            </dependency>
+	        <dependency>
+	            <groupId>org.gluu</groupId>
+	            <artifactId>oxauth-common</artifactId>
+	            <exclusions>
+	            	<exclusion>
+	            		<groupId>org.apache.jackrabbit</groupId>
+	            		<artifactId>jackrabbit-core</artifactId>
+	            	</exclusion>
+	            	<exclusion>
+	            		<groupId>org.bouncycastle</groupId>
+	            		<artifactId>bcprov-jdk15on</artifactId>
+	            	</exclusion>
+	            </exclusions>
+	        </dependency>
+			<dependency>
+				<groupId>org.gluu</groupId>
+				<artifactId>gluu-doc</artifactId>
+			</dependency>
+			
+			<!-- Jackson -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+			</dependency>
+		</dependencies>
+	
+</project>
