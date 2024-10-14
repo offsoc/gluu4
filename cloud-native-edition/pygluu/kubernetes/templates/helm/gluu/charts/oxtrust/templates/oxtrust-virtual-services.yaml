@@ -1,0 +1,52 @@
+{{- if .Values.global.istio.ingress }}
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-istio-base
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "oxtrust.labels" . | indent 4 }}
+{{- if .Values.additionalLabels }}
+{{ toYaml .Values.additionalLabels | indent 4 }}
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+{{ toYaml .Values.additionalAnnotations | indent 4 }}
+{{- end }}
+spec:
+  hosts:
+  - {{ .Values.global.domain }}
+  gateways:
+{{- if .Values.global.istio.gateways }}
+{{- with .Values.global.istio.gateways }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+{{- else }}
+  - {{ .Release.Name }}-global-gtw
+{{- end }}
+  http:
+  - name: "{{ .Release.Name }}-istio-base"
+    match:
+    - uri:
+        exact: "/"
+    rewrite:
+       uri: "/identity"
+    route:
+    - destination:
+        host: oxtrust.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8080
+      weight: 100
+  - name: "{{ .Release.Name }}-istio-oxtrust-stateful"
+    match:
+      - uri:
+          prefix: "/identity"
+    route:
+      - destination:
+          host: {{ .Values.service.oxTrustServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
+          port:
+            number: 8080
+        weight: 100
+{{- end }}

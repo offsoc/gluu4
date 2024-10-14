@@ -1,0 +1,23 @@
+{{ forms.text(form.gluu_fqdn) }}
+{{ forms.text(form.country_code) }}
+{{ forms.text(form.state) }}
+{{ forms.text(form.city) }}
+{{ forms.email(form.email) }}
+{{ forms.text(form.org_name) }}
+{{ forms.password(form.admin_pw) }}
+{{ forms.password(form.admin_pw_confirm) }}
+{% if persistence_backend in ("hybrid", "ldap") %}
+  {{ forms.password(form.ldap_pw) }}
+  {{ forms.password(form.ldap_pw_confirm) }}
+{% endif %}
+{{ forms.radio(form.migration_enabled) }}
+{% set hide_element = False if form.migration_enabled.data == 'Y' else True %}
+{% if form.migration_enabled.data == 'Y' %}
+    <div id="migrationEnabled" class="collapse {{ 'show' if form.migration_enabled.data == 'Y' else '' }}">
+	{{ forms.radio(form.migration_data_format) }}
+    {{ forms.fileinput(form.migration_files) }}
+    </div>
+{% endif %}
+<div id="fqdnRegistered" class="collapse {{ 'show' if deployment_arch  not in ('microk8s', 'minikube') else '' }}">
+{{ forms.radio(form.is_gluu_fqdn_registered) }}
+</div>

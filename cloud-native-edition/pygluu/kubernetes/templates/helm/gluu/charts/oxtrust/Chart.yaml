@@ -1,0 +1,21 @@
+# License terms and conditions for Gluu Cloud Native Edition:
+# https://www.apache.org/licenses/LICENSE-2.0
+apiVersion: v2
+name: oxtrust
+version: 1.8.39
+kubeVersion: ">=v1.22.0-0"
+description: Gluu Admin UI. This shouldn't be internet facing.
+type: application
+keywords:
+  - GUI
+  - Admin
+home: https://gluu.org/docs/gluu-server
+sources:
+  - https://github.com/GluuFederation/docker-oxtrust
+  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxtrust
+maintainers:
+  - name: Mohammad Abudayyeh
+    email: support@gluu.org
+    url: https://github.com/moabu
+icon: https://gluu.org/docs/gluu-server/favicon.ico
+appVersion: "4.5.5"

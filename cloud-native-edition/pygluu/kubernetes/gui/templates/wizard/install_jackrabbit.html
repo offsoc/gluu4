@@ -1,0 +1,27 @@
+<div class="alert alert-warning" role="alert">
+  <p>Jackrabbit must be installed. If the following prompt is answered with No it is assumed the jackrabbit content repository is either installed locally or remotely</p>
+</div>
+{{ forms.radio_toggle(form.install_jackrabbit) }}
+<div id="jackrabbitNoInstall" class="collapse {{ 'show' if form.install_jackrabbit.data == 'N' else ''}}">
+    {{ forms.text(form.jackrabbit_url) }}
+</div>
+<div id="jackrabbitYesInstall" class="collapse {{ 'show' if form.install_jackrabbit.data == 'Y' else ''}}">
+    {{ forms.text(form.jackrabbit_storage_size) }}
+</div>
+{{ forms.text(form.jackrabbit_admin_id) }}
+{{ forms.password(form.jackrabbit_admin_password) }}
+{{ forms.password(form.jackrabbit_admin_password_confirmation) }}
+{{ forms.radio_toggle(form.jackrabbit_cluster) }}
+<div id="jackrabbitCluster" class="collapse {{ 'show' if form.jackrabbit_cluster.data == 'Y' else ''}}">
+    {{ forms.radio_toggle(form.postgres.install_postgres) }}
+    <div id="postgresInstall" class="collapse {{ 'show' if form.postgres.install_postgres.data == 'Y' else '' }}">
+        {{ forms.text(form.postgres.postgres_namespace) }}
+    </div>
+    <div id="postgresNoInstall" class="collapse {{ 'show' if form.postgres.install_postgres.data == 'N' else '' }}">
+        {{ forms.text(form.postgres.postgres_url) }}
+    </div>
+    {{ forms.text(form.jackrabbit_pg_user) }}
+    {{ forms.password(form.jackrabbit_pg_password) }}
+    {{ forms.password(form.jackrabbit_pg_password_confirmation) }}
+    {{ forms.text(form.jackrabbit_database) }}
+</div>
