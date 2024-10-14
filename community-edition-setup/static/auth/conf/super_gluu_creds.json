@@ -1,0 +1,17 @@
+{
+    "android":{
+        "gluu":{
+            "enabled":true,
+            "platform_id":"ce_gcm"
+        }
+    },
+    "ios":{
+        "gluu":{
+            "enabled":true,
+            "platform_id":"ce_apns"
+        }
+    },
+    "gluu":{
+        "server_uri":"https://cloud.gluu.org/scan/push-api-server"
+    }
+}
