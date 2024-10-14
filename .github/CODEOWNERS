@@ -5,6 +5,7 @@
 # the repo. Unless a later match takes precedence
 /.github/ @moabu
 /community-edition-setup/ @devrimyatar @yuriyz @yurem @yuriyzz
+/community-edition-containers/ @iromli @moabu
 /oxAuth/ @yurem @yuriyz @yuriyzz
 /gluu-passport/ @kdhttps
 /casa/ @jgomer2001
@@ -17,3 +18,4 @@
 /scim/ @jgomer2001
 /oxTrust/ @yurem @shekhar16
 /oxShibboleth/ @yurem @uprightech
+/oxd/ @duttarnab @yuriyz
