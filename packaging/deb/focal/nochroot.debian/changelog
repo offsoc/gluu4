@@ -1,0 +1,6 @@
+gluu-server-nochroot (4.5.5) STABLE; urgency=medium
+
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Initial release.
+ -- Gluu Support <support@gluu.org>  Sat Jul  6 06:38:47 UTC 2024
+

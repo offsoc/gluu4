@@ -1,0 +1,13 @@
+Source: gluu-server-nochroot
+Section: java
+Priority: optional
+Maintainer: Gluu support <support@gluu.org>
+Build-Depends: debhelper (>=11~)
+Standards-Version: 4.1.4
+Homepage: https://www.gluu.org
+
+Package: gluu-server-nochroot
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}, python3-ldap3, python3-six, python3-ruamel.yaml, python3-distutils, python3-pymysql, tar, net-tools, apache2, curl, wget, xz-utils, unzip, rsyslog, python3-requests, python3-certifi, bzip2
+Description: Gluu Server Community Edition
