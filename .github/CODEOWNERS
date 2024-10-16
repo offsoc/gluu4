@@ -11,6 +11,7 @@
 /casa/ @jgomer2001
 /cloud-native-edition/ @moabu @iromli
 /docs-gluu-server-prod/ @ossdhaval
+/docs-casa-prod/ @ossdhaval
 /gluu-core-bom/ @yurem
 /oxCore/ @yurem @yuriyz @yuriyzz
 /oxOrm/ @yurem @yuriyz

@@ -1,0 +1,13 @@
+Source: gluu-server
+Section: java
+Priority: optional
+Maintainer: Gluu Developers <support@gluu.org>
+XSBC-Original-Maintainer: Davit Nikoghosyan <davit@gluu.org>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Homepage: http://www.gluu.org
+
+Package: gluu-server
+Architecture: amd64
+Depends: bash (>= 2.05a-11), sed (>= 3.02-8), grep (>= 2.4.2-3), coreutils (>= 5.0-5), net-tools (>= 1.60), systemd-container
+Description: Gluu Server Community Edition

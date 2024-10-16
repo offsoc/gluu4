@@ -1,0 +1,6 @@
+./etc/profile.d/gluu-server.sh
+./usr/sbin/gluu-serverd
+./opt/dist/app
+./opt/dist/gluu
+./opt/dist/scripts
+./opt/gluu/bin
