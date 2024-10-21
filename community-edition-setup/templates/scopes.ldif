@@ -132,6 +132,17 @@ objectClass: top
 oxAttributes: {"spontaneousClientId":"","spontaneousClientScopes":[],"showInConfigurationEndpoint":true}
 oxScopeType: openid
 
+dn: inum=6D92,ou=scopes,o=jans
+description: Authorization Challenge
+displayName: authorization_challenge
+inum: 6D92
+oxAttributes: {"spontaneousClientId":"","spontaneousClientScopes":[],"showInConfigurationEndpoint":true}
+defaultScope: true
+oxId: authorization_challenge
+oxScopeType: oauth
+objectClass: top
+objectClass: oxAuthCustomScope
+
 dn: inum=7D90,ou=scopes,o=gluu
 defaultScope: false
 description: revoke_session scope which is required to be able call /revoke_session endpoint
