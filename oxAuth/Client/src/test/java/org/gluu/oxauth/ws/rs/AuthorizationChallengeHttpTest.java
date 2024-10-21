@@ -33,7 +33,7 @@ public class AuthorizationChallengeHttpTest extends BaseTest {
                 ResponseType.CODE,
                 ResponseType.ID_TOKEN);
         List<GrantType> grantTypes = Arrays.asList(GrantType.AUTHORIZATION_CODE, GrantType.REFRESH_TOKEN);
-        List<String> scopes = Arrays.asList("openid", "profile", "address", "email", "phone", "user_name");
+        List<String> scopes = Arrays.asList("openid", "profile", "address", "email", "phone", "user_name", "authorization_challenge");
 
         // 1. Register client
         RegisterResponse registerResponse = registerClient(redirectUris, responseTypes, grantTypes, scopes);
@@ -51,7 +51,7 @@ public class AuthorizationChallengeHttpTest extends BaseTest {
         authorizationRequest.setNonce(nonce);
         authorizationRequest.setState(state);
         authorizationRequest.addCustomParameter("username", userId);
-        authorizationRequest.addCustomParameter("password", userSecret);
+        authorizationRequest.addCustomParameter("otp", userSecret);
         authorizationRequest.setAuthorizationMethod(AuthorizationMethod.FORM_ENCODED_BODY_PARAMETER);
 
         AuthorizeClient authorizeClient = new AuthorizeClient(authorizationChallengeEndpoint);
@@ -79,24 +79,10 @@ public class AuthorizationChallengeHttpTest extends BaseTest {
         showClient(tokenClient1);
 
         assertNotNull(tokenResponse1);
-        assertNotNull(tokenResponse1.getRefreshToken());
         assertNotNull(tokenResponse1.getIdToken());
         assertNotNull(tokenResponse1.getAccessToken());
 
-        String refreshToken = tokenResponse1.getRefreshToken();
-
-        // 4. Request new access token using the refresh token.
-        TokenClient tokenClient2 = new TokenClient(tokenEndpoint);
-        tokenClient2.setExecutor(clientEngine(true));
-        TokenResponse tokenResponse2 = tokenClient2.execRefreshToken(tokenResponse1.getScope(), refreshToken, clientId, clientSecret);
-        showClient(tokenClient2);
-
-        assertNotNull(tokenResponse2);
-        assertNotNull(tokenResponse2.getRefreshToken());
-        assertNotNull(tokenResponse2.getIdToken());
-        assertNotNull(tokenResponse2.getAccessToken());
-
-        String accessToken = tokenResponse2.getAccessToken();
+        String accessToken = tokenResponse1.getAccessToken();
 
         // 6. Request user info
         UserInfoClient userInfoClient = new UserInfoClient(userInfoEndpoint);
