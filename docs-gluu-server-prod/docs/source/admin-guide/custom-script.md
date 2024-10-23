@@ -252,6 +252,43 @@ This script can be used in an oxTrust application only.
 
 - [Sample ID Generation Script](./sample-id-generation-script.py)      
 
+
+## Authorization Challenge Custom Script
+
+The Authorization server implements [OAuth 2.0 for First-Party Applications](https://www.ietf.org/archive/id/draft-parecki-oauth-first-party-native-apps-02.html).
+This script is used to control/customize Authorization Challenge Endpoint.
+
+In request to Authorization Challenge Endpoint to is expected to have `acr_values` request parameter which specifies name of the custom script.
+If parameter is absent or AS can't find script with this name then it falls back to script with name `default_challenge`.
+This script is provided during installation and performs basic `username`/`password` authentication.
+
+```
+POST /oxauth/restv1/authorize-challenge HTTP/1.1
+Host: yuriyz-fond-skink.gluu.info
+client_id=999e13b8-f4a2-4fed-ad3c-6c88bd2c92ea&scope=openid+profile+address+email+phone+user_name&state=b4a41b29-51c8-4354-9c8c-fda38b4dbd43&nonce=3a56f8d0-f78e-4b15-857c-3e792801be68&acr_values=&request_session_id=false&password=secret&username=admin
+```
+There is **authorizationChallengeDefaultAcr** AS configuration property which allows to change fallback script name from `default_challenge` to some other value (value must be valid script name present on AS).
+
+The Authorization Challenage script implements the [AuthorizationChallenageType](https://github.com/GluuFederation/oxauth/blob/4.5/oxCore/script/src/main/java/org/gluu/model/custom/script/type/authzchallenge/AuthorizationChallengeType.java) interface. This extends methods from the base script type in addition to adding new methods:
+
+**Inherited methods**
+| Method header | Method description |
+|:-----|:------|
+| `def init(self, customScript, configurationAttributes)` | This method is only called once during the script initialization. It can be used for global script initialization, initiate objects etc |
+| `def destroy(self, configurationAttributes)` | This method is called once to destroy events. It can be used to free resource and objects created in the `init()` method |
+| `def getApiVersion(self, configurationAttributes, customScript)` | The getApiVersion method allows API changes in order to do transparent migration from an old script to a new API. Only include the customScript variable if the value for getApiVersion is greater than 10 |
+
+**New methods**
+| Method header | Method description |
+|:-----|:------|
+|`def authorize(self, context)`| Called when the request is received. |
+
+`authorize` method returns true/false which indicates to server whether to issue `authorization_code` in response or not.
+If parameters is not present then error has to be created and `false` returned.
+If all is good script has to return `true` and it's strongly recommended to set user `context.getExecutionContext().setUser(user);` so AS can keep tracking what exactly user is authenticated.
+
+Full sample script can be found [here](./authorization_challenge.py)
+
 ## Cache Refresh       
 
 In order to integrate your Gluu instance with backend LDAP servers handling authentication in your existing network environment, oxTrust provides a mechanism called [Cache Refresh](../user-management/ldap-sync.md#ldap-synchronization) to copy user data to the Gluu Server's local LDAP server. During this process it is possible to specify key attribute(s) and specify attribute name transformations. There are also cases when it can be used to overwrite attribute values or to add new attributes based on other attribute values.
