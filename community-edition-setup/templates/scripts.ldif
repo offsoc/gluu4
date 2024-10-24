@@ -238,6 +238,20 @@ oxScript::%(resource_owner_password_credentials_resource_owner_password_credenti
 oxScriptType: resource_owner_password_credentials
 programmingLanguage: python
 
+dn: inum=0300-BA99,ou=scripts,o=gluu
+objectClass: top
+objectClass: oxCustomScript
+description: Default Authorization Challenge Script
+displayName: default_challenge
+oxEnabled: true
+inum: 0300-BA99
+oxLevel: 1
+oxRevision: 1
+oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
+oxScript::%(authorization_challenge_authorization_challenge)s
+oxScriptType: authorization_challenge
+programmingLanguage: python
+
 dn: inum=4BBE-C6A8,ou=scripts,o=gluu
 objectClass: top
 objectClass: oxCustomScript

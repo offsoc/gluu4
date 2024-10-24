@@ -113,6 +113,7 @@ nav:
         - 'UMA Authorization Server (AS)': 'admin-guide/uma.md'
         - 'Central Authentication Service (CAS)': 'admin-guide/cas.md'
         - 'OAuth2.0 Device Authorization Grant': admin-guide/device-authz-grant/
+        - 'OAuth2.0 First-Party Applications': 'admin-guide/first-party-apps/'
         - 'Session Management': 'admin-guide/session.md'
         - 'Certificate Management': 'admin-guide/certificate.md'
         - 'CORS Configuration': 'admin-guide/cors.md'
