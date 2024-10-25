@@ -447,7 +447,8 @@ public class AuthenticationService {
 							log.debug("User authenticated: {}", userDn);
 
 							log.debug("Attempting to find userDN by local primary key: {}", localPrimaryKey);
-							User localUser = userService.getUserByAttribute(localPrimaryKey, keyValue);
+							String lowerKeyValue = StringHelper.toLowerCase(keyValue);
+							User localUser = userService.getUserByAttributes(lowerKeyValue, new String[] {localPrimaryKey}, new String[] {"uid", "gluuStatus"});
 							if (localUser != null) {
 								if (!checkUserStatus(localUser)) {
 									return false;
