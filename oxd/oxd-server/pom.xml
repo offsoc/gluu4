@@ -224,6 +224,7 @@
                 <configuration>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
                 </configuration>
             </plugin>
             <plugin>
