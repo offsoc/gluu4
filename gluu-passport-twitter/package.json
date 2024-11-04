@@ -35,7 +35,7 @@
   ],
   "main": "./lib",
   "peerDependencies": {
-    "gluu-passport-node-xtraverse": "../gluu-passport-node-xtraverse"
+    "xtraverse": "../gluu-passport-node-xtraverse"
   },
   "dependencies": {
     "passport-oauth1": "1.x.x"

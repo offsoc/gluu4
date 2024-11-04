@@ -25,10 +25,10 @@
     "dev": "NODE_ENV=development node server/app.js",
     "lint": "eslint 'server/**/*.js' 'test/**/*.js' 'config/**/*.js'",
     "generate-coverage": "NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install"
   },
   "peerDependencies": {
-    "gluu-passport-twiiter": "../gluu-passport-twitter"
+    "passport-twitter": "../gluu-passport-twitter"
   },
   "dependencies": {
     "@nicokaiser/passport-apple": "^2.0.0",
