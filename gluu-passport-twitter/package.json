@@ -34,9 +34,11 @@
     }
   ],
   "main": "./lib",
+  "peerDependencies": {
+    "gluu-passport-node-xtraverse": "*"
+  },
   "dependencies": {
-    "passport-oauth1": "1.x.x",
-    "xtraverse": "https://gitpkg.vercel.app/GluuFederation/gluu4/gluu-node-xtraverse?4.5"
+    "passport-oauth1": "1.x.x"
   },
   "devDependencies": {
     "chai": "4.3.4",
