@@ -347,7 +347,7 @@ Please calculate the minimum required resources as per the services deployed. Th
     
        ```bash
 
-        helm repo add gluu https://gluufederation.github.io/gluu4/cloud-native-edition/pygluu/kubernetes/templates/helm
+        helm repo add gluu https://gluufederation.github.io/gluu4/pygluu/kubernetes/templates/helm
         helm repo update
         helm install gluu gluu/gluu -n <namespace> --version=1.7.x -f override-values.yaml
        ```
