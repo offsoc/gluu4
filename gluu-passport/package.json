@@ -28,7 +28,7 @@
     "prepare": "husky install"
   },
   "peerDependencies": {
-    "gluu-passport-twiiter": "*"
+    "gluu-passport-twiiter": "../gluu-passport-twitter"
   },
   "dependencies": {
     "@nicokaiser/passport-apple": "^2.0.0",
