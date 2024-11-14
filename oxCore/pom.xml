@@ -164,6 +164,7 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
 						<failOnError>false</failOnError>
+						<source>8</source> 
 					</configuration>
 				</plugin>
 			</plugins>
