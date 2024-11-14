@@ -1,0 +1,10 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = https://gitpkg.vercel.app/GluuFederation/gluu4/gluu-passport-twitter?4.5
+	fetch = +refs/*:refs/*
+	mirror = true
