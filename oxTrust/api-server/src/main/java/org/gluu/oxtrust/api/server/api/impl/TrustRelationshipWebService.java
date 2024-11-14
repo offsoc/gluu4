@@ -822,6 +822,7 @@ public class TrustRelationshipWebService extends BaseWebResource {
                 File file = new File(filePath);
                 if (!file.exists()) {
                     logger.debug("The trust relationship {} metadata used local storage but the SP metadata file `{}` was not found",
+                            trustRelationship.getInum(),filePath);
                     return false;
                 }
             }
