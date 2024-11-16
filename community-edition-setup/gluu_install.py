@@ -42,7 +42,7 @@ parser.add_argument('-n', help="No prompt", action='store_true')
 parser.add_argument('--no-setup', help="Do not launch setup", action='store_true')
 parser.add_argument('--dist-server-base', help="Download server", default='https://maven.gluu.org/maven')
 parser.add_argument('-profile', help="Setup profile", choices=['CE', 'DISA-STIG'], default='CE')
-parser.add_argument('--setup-branch', help="Gluu CE setup github branch", default="version_4.5.5")
+parser.add_argument('--setup-branch', help="Gluu CE setup github branch", default="4.5")
 parser.add_argument('-c', help="Don't download files that exists on disk", action='store_true')
 
 argsp = parser.parse_args()
@@ -130,10 +130,6 @@ if not argsp.uninstall:
         else:
             missing_packages.append('python3-ruamel.yaml')
 
-    try:
-        from distutils import dist
-    except:
-        missing_packages.append('python3-distutils')
 
     try:
         import pymysql
@@ -205,7 +201,7 @@ app_versions = {
     "SETUP_BRANCH": argsp.setup_branch,
     "TWILIO_VERSION": "7.17.0",
     "JSMPP_VERSION": "2.3.7",
-    "APPS_GIT_BRANCH": "master",
+    "APPS_GIT_BRANCH": "4.5",
     }
 
 jetty_dist_string = 'jetty-distribution'
@@ -217,6 +213,8 @@ result = re.findall('(\d*).', app_versions['JETTY_VERSION'])
 if result and result[0] and result[0].isdigit() and int(result[0]) > 9:
     jetty_dist_string = 'jetty-home'
 
+
+gluu_archieve = 'gluu-{}.zip'.format(app_versions['APPS_GIT_BRANCH'])
 
 def check_installation():
     if not (os.path.exists(jetty_home) and os.path.exists('/etc/gluu')):
@@ -285,7 +283,7 @@ if argsp.uninstall:
 
 
 passman = request.HTTPPasswordMgrWithDefaultRealm()
-passman.add_password(None, maven_root, argsp.maven_user, argsp.maven_password)
+passman.add_password(None, maven_root.rstrip('/'), argsp.maven_user, argsp.maven_password)
 authhandler = request.HTTPBasicAuthHandler(passman)
 opener = request.build_opener(authhandler)
 request.install_opener(opener)
@@ -310,25 +308,45 @@ def download(url, target_fn):
             shutil.copyfileobj(resp, out_file)
 
 
-def extract_subdir(zip_fn, sub_dir, target_dir, par_dir=None):
+def extract_subdir(zip_fn, sub_dir, target_dir, par_dir=None, overwrite=False):
     target_fp = os.path.join(target_dir, os.path.basename(sub_dir))
-    if os.path.exists(target_fp):
-        return
 
     zip_obj = zipfile.ZipFile(zip_fn, "r")
-    if par_dir is None:
-        par_dir = zip_obj.namelist()[0]
+    members = zip_obj.infolist()
 
-    with TemporaryDirectory() as unpack_dir:
-        zip_obj.extractall(unpack_dir)
-        shutil.copytree(
-            os.path.join(unpack_dir, par_dir, sub_dir),
-            target_fp
-            )
+    if par_dir is None:
+        par_dir = members[0].filename
+
+    subdir_with_parent = os.path.join(par_dir, sub_dir) if par_dir else sub_dir
+
+    for member in members:
+        if member.filename.startswith(subdir_with_parent):
+            if sub_dir:
+                n = sub_dir.count('/') + 1
+                member_path = Path(member.filename)
+                extract_path = Path(*member_path.parts[n:]).as_posix()
+            else:
+                extract_path = member.filename
+
+            extracted_path = os.path.join(target_dir, extract_path)
+            if not overwrite and os.path.exists(extracted_path):
+                continue
+
+            if member.is_dir():
+                if not os.path.exists(extracted_path):
+                    os.makedirs(extracted_path)
+            else:
+                member.filename = extract_path
+                zip_obj.extract(member, target_dir)
+
+            if member.external_attr >  0xffff:
+                 os.chmod(extracted_path, member.external_attr >> 16)
+
     zip_obj.close()
 
 
 def package_oxd():
+    print("Packaging oxd-server")
     oxd_tgz_fn = os.path.join(gluu_app_dir, 'oxd-server.tgz')
     oxd_zip_fn = os.path.join(gluu_app_dir, 'oxd-server.zip')
     oxd_tmp_root = '/tmp/{}'.format(os.urandom(5).hex())
@@ -339,20 +357,21 @@ def package_oxd():
     else:
         download(maven_base + '/org/gluu/oxd-server/{0}{1}/oxd-server-{0}{1}-distribution-bc-fips.zip'.format(app_versions['OX_VERSION'], app_versions['OX_GITVERISON']), oxd_zip_fn)
 
-    download('https://raw.githubusercontent.com/GluuFederation/community-edition-package/{}/package/systemd/oxd-server.service'.format(app_versions['APPS_GIT_BRANCH']), os.path.join(oxd_tmp_dir, 'oxd-server.service'))
+    os.makedirs(oxd_tmp_dir)
 
-    cmd = 'unzip -qqo {} -d {}'.format(oxd_zip_fn, oxd_tmp_dir)
-    print("Excuting", cmd)
-    os.system(cmd)
-    cmd = 'mkdir ' + os.path.join(oxd_tmp_dir, 'data')
-    shutil.copy(os.path.join(gluu_app_dir, 'oxd-server-start.sh'), os.path.join(oxd_tmp_dir, 'bin/oxd-server'))
+    extract_subdir(oxd_zip_fn, '', oxd_tmp_dir, par_dir='')
+    extract_subdir(os.path.join(gluu_app_dir, gluu_archieve), 'oxd/debian', oxd_tmp_root)
+    shutil.copy(os.path.join(oxd_tmp_root, 'debian/oxd-server'), os.path.join(oxd_tmp_dir, 'bin'))
     os.chmod(os.path.join(oxd_tmp_dir, 'bin/oxd-server'), 33261)
-    print("Excuting", cmd)
-    os.system(cmd)
-    cmd = 'cd {}; tar -zcf {} oxd-server'.format(oxd_tmp_root, oxd_tgz_fn)
-    print("Excuting", cmd)
-    os.system(cmd)
-    os.remove(oxd_zip_fn)
+    os.makedirs(os.path.join(oxd_tmp_dir, 'data'))
+
+    mydir = os.getcwd()
+    os.chdir(oxd_tmp_root)
+
+    with tarfile.open(oxd_tgz_fn, mode='w:gz') as oxd_tar:
+        oxd_tar.add('oxd-server')
+    os.chdir(mydir)
+
     shutil.rmtree(oxd_tmp_root)
 
 if not argsp.u:
@@ -391,12 +410,8 @@ if not argsp.u:
     download(maven_base + '/org/gluufederation/opendj/opendj-server-legacy/{0}/opendj-server-legacy-{0}.zip'.format(app_versions['OPENDJ_VERSION']), os.path.join(app_dir,'opendj-server-{0}.zip'.format(app_versions['OPENDJ_VERSION'])))
     download('https://repo1.maven.org/maven2/com/twilio/sdk/twilio/{0}/twilio-{0}.jar'.format(app_versions['TWILIO_VERSION']), os.path.join(gluu_app_dir,'twilio-{0}.jar'.format(app_versions['TWILIO_VERSION'])))
     download('https://repo1.maven.org/maven2/org/jsmpp/jsmpp/{0}/jsmpp-{0}.jar'.format(app_versions['JSMPP_VERSION']), os.path.join(gluu_app_dir,'jsmpp-{0}.jar'.format(app_versions['JSMPP_VERSION'])))
-    download('https://github.com/GluuFederation/casa/raw/{}/extras/casa.pub'.format(app_versions['APPS_GIT_BRANCH']), os.path.join(gluu_app_dir,'casa.pub'))
-    download('https://raw.githubusercontent.com/GluuFederation/casa/{}/plugins/account-linking/extras/login.xhtml'.format(app_versions['APPS_GIT_BRANCH']), os.path.join(gluu_app_dir,'login.xhtml'))
-    download('https://raw.githubusercontent.com/GluuFederation/casa/{}/plugins/account-linking/extras/casa.py'.format(app_versions['APPS_GIT_BRANCH']), os.path.join(gluu_app_dir,'casa.py'))
-    download('https://raw.githubusercontent.com/GluuFederation/gluu-snap/master/facter/facter', os.path.join(gluu_app_dir,'facter'))
-    download('https://raw.githubusercontent.com/GluuFederation/oxd/{}/debian/oxd-server'.format(app_versions['APPS_GIT_BRANCH']), os.path.join(gluu_app_dir,'oxd-server-start.sh'))
-    download('https://github.com/GluuFederation/community-edition-setup/archive/{}.zip'.format(app_versions['SETUP_BRANCH']), os.path.join(gluu_app_dir,'community-edition-setup.zip'))
+    download('https://raw.githubusercontent.com/JanssenProject/jans/refs/heads/main/jans-linux-setup/jans_setup/static/scripts/facter', os.path.join(gluu_app_dir,'facter'))
+    download('https://github.com/GluuFederation/gluu4/archive/refs/heads/{}.zip'.format(app_versions['SETUP_BRANCH']), os.path.join(gluu_app_dir, gluu_archieve))
     download('https://github.com/sqlalchemy/sqlalchemy/archive/rel_1_3_23.zip', os.path.join(app_dir, 'sqlalchemy.zip'))
     download('https://mds.fidoalliance.org/', os.path.join(app_dir, 'fido2/mds/toc/toc.jwt'))
     download('https://secure.globalsign.com/cacert/root-r3.crt', os.path.join(app_dir, 'fido2/mds/cert/root-r3.crt'))
@@ -405,17 +420,10 @@ if not argsp.u:
     download('https://github.com/jpadilla/pyjwt/archive/refs/tags/2.4.0.zip', os.path.join(app_dir, 'pyjwt.zip'))
 
 
-    if not argsp.upgrade:
-        for uf in services:
-            download('https://raw.githubusercontent.com/GluuFederation/community-edition-package/{}/package/systemd/{}'.format(app_versions['APPS_GIT_BRANCH'], uf), os.path.join('/etc/systemd/system', uf))
-    package_oxd()
-
-
 shutil.copy(os.path.join(gluu_app_dir, 'facter'), '/usr/bin')
 os.chmod('/usr/bin/facter', 33261)
 if not os.path.exists(certs_dir):
     os.makedirs(certs_dir)
-shutil.copy(os.path.join(gluu_app_dir, 'casa.pub'), certs_dir)
 
 if argsp.upgrade:
 
@@ -443,11 +451,13 @@ if argsp.upgrade:
 
 else:
     print("Extracting community-edition-setup package")
+
     extract_subdir(
-        os.path.join(gluu_app_dir, 'community-edition-setup.zip'),
-        '',
-        ces_dir
+        os.path.join(gluu_app_dir, gluu_archieve),
+        'community-edition-setup',
+        os.path.dirname(ces_dir)
         )
+
 
     extract_libs = [
             ('npyscreen-master.zip', 'npyscreen', None)
@@ -463,6 +473,7 @@ else:
         print("Extracting", zip_fn)
         extract_subdir(os.path.join(app_dir, zip_fn), sub_dir, pylib_dir, par_dir)
 
+    package_oxd()
 
     if argsp.profile == 'DISA-STIG':
         open(os.path.join(ces_dir, 'disa-stig'), 'w').close()

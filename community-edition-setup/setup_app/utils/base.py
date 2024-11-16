@@ -107,7 +107,7 @@ current_number_of_cpu = multiprocessing.cpu_count()
 
 disk_st = os.statvfs('/')
 current_free_disk_space = round(disk_st.f_bavail * disk_st.f_frsize / (1024 * 1024 *1024), 1)
-
+current_app.gluu_zip = os.path.join(Config.distFolder, 'gluu/gluu.zip')
 
 def check_resources():
 
@@ -323,3 +323,25 @@ def check_port_available(port_list, host='localhost'):
         socket_object.close()
 
     return open_ports
+
+def extract_file(zip_file, source, target, ren=False):
+    fn = None
+    zip_obj = zipfile.ZipFile(zip_file, "r")
+
+    for member in zip_obj.infolist():
+        if not member.is_dir() and member.filename.endswith(source):
+            if ren:
+                target_p = Path(target)
+            else:
+                p = Path(member.filename)
+                target_p = Path(target).joinpath(p.name)
+                if not target_p.parent.exists():
+                    target_p.parent.mkdir(parents=True)
+            logIt(f"Extracting {source} from {zip_file} to {target}")
+            target_p.write_bytes(zip_obj.read(member))
+            fn = target_p.as_posix()
+            break
+
+    zip_obj.close()
+
+    return fn

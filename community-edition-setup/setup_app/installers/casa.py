@@ -69,7 +69,7 @@ class CasaInstaller(JettyInstaller):
 
             #Adding twilio jar path to oxauth.xml
             oxauth_xml_fn = os.path.join(self.jetty_base,  'oxauth/webapps/oxauth.xml')
-            
+
             extra_classpath_list = [
                         './custom/libs/{}'.format(os.path.basename(twillo_package)),
                         './custom/libs/{}'.format(os.path.basename(jsmpp_package)),
@@ -83,6 +83,8 @@ class CasaInstaller(JettyInstaller):
 
         for script_fn in glob.glob(os.path.join(Config.staticFolder, 'casa/scripts/*.*')):
             self.run(['cp', script_fn, self.pylib_folder])
+
+        base.extract_file(base.current_app.gluu_zip, 'casa/extras/casa.pub', '/etc/certs')
 
     def render_import_templates(self, import_script=True):
 

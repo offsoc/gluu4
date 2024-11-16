@@ -49,8 +49,6 @@ class Config:
         self.currentGluuVersion = re.search('([\d.]+)', oxauth_info['version']).group().strip('.')
         self.githubBranchName = oxauth_info['branch']
 
-        self.ce_setup_zip = 'https://github.com/GluuFederation/community-edition-setup/archive/%s.zip' % self.githubBranchName
-
     @classmethod
     def dump(self, dumpFile=False):
         if not os.environ.get('gdebug'):
