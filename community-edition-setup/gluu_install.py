@@ -56,8 +56,10 @@ maven_o = urlparse(maven_base)
 maven_root = maven_o._replace(path='').geturl()
 
 githup_raw_base_url = f'https://raw.githubusercontent.com/GluuFederation/gluu4/refs/heads/{argsp.setup_branch}/'
-with urllib.request.urlopen(os.path.join(githup_raw_base_url, 'community-edition-setup/app_info.json')) as response:
-    app_info = json.loads(response.read())
+app_info_url = os.path.join(githup_raw_base_url, 'community-edition-setup/app_info.json')
+print("Retreiving application info", app_info_url)
+with request.urlopen(app_info_url) as response:
+    app_versions = json.loads(response.read())
 
 app_versions['SETUP_BRANCH'] = argsp.setup_branch
 
