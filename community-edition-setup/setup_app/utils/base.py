@@ -107,7 +107,6 @@ current_number_of_cpu = multiprocessing.cpu_count()
 
 disk_st = os.statvfs('/')
 current_free_disk_space = round(disk_st.f_bavail * disk_st.f_frsize / (1024 * 1024 *1024), 1)
-current_app.gluu_zip = os.path.join(Config.distFolder, 'gluu/gluu.zip')
 
 def check_resources():
 
@@ -345,3 +344,49 @@ def extract_file(zip_file, source, target, ren=False):
     zip_obj.close()
 
     return fn
+
+
+def extract_subdir(zip_fn, sub_dir, target_dir, par_dir=None, overwrite=False):
+    target_fp = os.path.join(target_dir, os.path.basename(sub_dir))
+
+    logIt(f"Extracting {zip_fn} to {target_dir}")
+
+    zip_obj = zipfile.ZipFile(zip_fn, "r")
+    members = zip_obj.infolist()
+
+    if par_dir is None:
+        par_dir = members[0].filename
+
+    subdir_with_parent = os.path.join(par_dir, sub_dir) if par_dir else sub_dir
+
+    for member in members:
+        if member.filename.startswith(subdir_with_parent):
+            if sub_dir:
+                n = sub_dir.count('/') + 1
+                member_path = Path(member.filename)
+                extract_path = Path(*member_path.parts[n:]).as_posix()
+            else:
+                extract_path = member.filename
+
+            extracted_path = os.path.join(target_dir, extract_path)
+            if not overwrite and os.path.exists(extracted_path):
+                logIt(f"Overwrite disabled, not extracting {member.filename}")
+                continue
+
+            if member.is_dir():
+                if not os.path.exists(extracted_path):
+                    logIt(f"Creating directory {extracted_path}")
+                    os.makedirs(extracted_path)
+            else:
+                member.filename = extract_path
+                logIt(f"Extracting {member.filename} to {target_dir}")
+                zip_obj.extract(member, target_dir)
+
+            if member.external_attr >  0xffff:
+                 os.chmod(extracted_path, member.external_attr >> 16)
+
+    zip_obj.close()
+
+app_info_fn = os.environ.get('GLUU_APP_INFO') or os.path.join(par_dir, 'app_info.json')
+current_app.app_info = readJsonFile(app_info_fn)
+current_app.gluu_zip = os.path.join(Config.distFolder, f'gluu/gluu-{current_app.app_info["APPS_GIT_BRANCH"]}.zip')
