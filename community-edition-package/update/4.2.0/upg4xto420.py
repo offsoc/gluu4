@@ -668,7 +668,7 @@ class GluuUpdater:
                     ('https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/{0}/jetty-distribution-{0}.tar.gz'.format(self.jetty_version), os.path.join(self.app_dir, 'jetty-distribution-{0}.tar.gz'.format(self.jetty_version))),
                     ('https://corretto.aws/downloads/resources/11.0.8.10.1/amazon-corretto-11.0.8.10.1-linux-x64.tar.gz', os.path.join(self.app_dir, 'amazon-corretto-11-x64-linux-jdk.tar.gz')),
                     ('https://repo1.maven.org/maven2/org/python/jython-installer/2.7.2/jython-installer-2.7.2.jar', os.path.join(self.app_dir, 'jython-installer-2.7.2.jar')),
-                    ('https://raw.githubusercontent.com/GluuFederation/gluu-snap/master/facter/facter', os.path.join(self.app_dir, 'facter')),
+                    ('https://raw.githubusercontent.com/JanssenProject/jans/refs/heads/main/jans-linux-setup/jans_setup/static/scripts/facter', os.path.join(self.app_dir, 'facter')),
                     ]
 
         if os.path.exists('/opt/shibboleth-idp') or force:
