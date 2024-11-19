@@ -27,7 +27,7 @@
 		<repository>
 			<id>jans</id>
 			<name>Janssen project repository</name>
-			<url>https://maven.jans.io/maven4</url>
+			<url>https://maven.jans.io/maven</url>
 		</repository>
 	</repositories>
 		
