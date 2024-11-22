@@ -77,13 +77,15 @@ public class FilterProcessor {
 		if (filters != null) {
 			for (Filter filter : filters) {
 				if (filter.getType() == FilterType.LOWERCASE) {
-					genericFilter.setFilters(null);
-					genericFilter.setAttributeName(filter.getAttributeName());
-					genericFilter.setAssertionValue(filter.getAssertionValue());
+					Filter resultFilter = genericFilter.clone();
+					resultFilter.setFilters(null);
+					resultFilter.setAttributeName(filter.getAttributeName());
+					resultFilter.setAssertionValue(filter.getAssertionValue());
 					
-					return genericFilter;
+					return resultFilter;
 				}
 			}
+
 			List<Filter> resultFilters = new LinkedList<>();
 			for (Filter filter : filters) {
 				Filter resultFilter = excludeLowerFilter(filter);
