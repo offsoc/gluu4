@@ -63,4 +63,38 @@ public class FilterProcessor {
 		return genericFilter;
 	}
 
+	public Filter excludeLowerFilter(Filter genericFilter) {
+		if (genericFilter == null) {
+			return null;
+		}
+
+		FilterType type = genericFilter.getType();
+		if (FilterType.RAW == type) {
+			return genericFilter;
+		}
+
+		Filter[] filters = genericFilter.getFilters();
+		if (filters != null) {
+			List<Filter> resultFilters = new LinkedList<>();
+			for (Filter filter : filters) {
+				if (filter.getType() == FilterType.LOWERCASE) {
+					genericFilter.setFilters(null);
+					genericFilter.setAttributeName(filter.getAttributeName());
+					genericFilter.setAssertionValue(filter.getAssertionValue());
+					
+				}
+				return genericFilter;
+			}
+			if (resultFilters.size() == 0) {
+				return null;
+			}
+
+			Filter resultFilter = new Filter(type, resultFilters.toArray(new Filter[0]));
+			resultFilter.setAssertionValue(genericFilter.getAssertionValue());
+
+			return resultFilter;
+		}
+
+		return genericFilter;
+	}
 }
