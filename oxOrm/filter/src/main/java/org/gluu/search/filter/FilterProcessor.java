@@ -75,15 +75,21 @@ public class FilterProcessor {
 
 		Filter[] filters = genericFilter.getFilters();
 		if (filters != null) {
-			List<Filter> resultFilters = new LinkedList<>();
 			for (Filter filter : filters) {
 				if (filter.getType() == FilterType.LOWERCASE) {
 					genericFilter.setFilters(null);
 					genericFilter.setAttributeName(filter.getAttributeName());
 					genericFilter.setAssertionValue(filter.getAssertionValue());
 					
+					return genericFilter;
 				}
-				return genericFilter;
+			}
+			List<Filter> resultFilters = new LinkedList<>();
+			for (Filter filter : filters) {
+				Filter resultFilter = excludeLowerFilter(filter);
+				if (resultFilter != null) {
+					resultFilters.add(resultFilter);
+				}
 			}
 			if (resultFilters.size() == 0) {
 				return null;
