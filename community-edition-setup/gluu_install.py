@@ -347,7 +347,7 @@ if not argsp.u:
         download('https://www.apple.com/certificateauthority/Apple_WebAuthn_Root_CA.pem', os.path.join(app_dir, 'Apple_WebAuthn_Root_CA.pem'))
         download('https://www.apple.com/certificateauthority/Apple_WebAuthn_Root_CA.pem', os.path.join(app_dir, 'Apple_WebAuthn_Root_CA.pem'))
         download(os.path.join(maven_root, 'npm4/passport/passport-{}.tgz'.format(app_versions['PASSPORT_VERSION'])), os.path.join(gluu_app_dir,'passport.tgz'))
-        download(os.path.join(maven_root, 'npm4/passport/passport-version_{}-node_modules.tar.gz'.format(app_versions['PASSPORT_VERSION'])), os.path.join(gluu_app_dir,'passport-version_{}-node_modules.tar.gz'.format(app_versions['PASSPORT_VERSION'])))
+        download(os.path.join(maven_root, 'npm4/passport/passport-{}-node_modules.tar.gz'.format(app_versions['PASSPORT_VERSION'])), os.path.join(gluu_app_dir,'passport-{}-node_modules.tar.gz'.format(app_versions['PASSPORT_VERSION'])))
         download(os.path.join(maven_base, 'org/gluu/super-gluu-radius-server/{0}{1}/super-gluu-radius-server-{0}{1}.jar'.format(app_versions['OX_VERSION'], app_versions['OX_GITVERISON'])), os.path.join(gluu_app_dir, 'super-gluu-radius-server.jar'))
         download(os.path.join(maven_base, 'org/gluu/super-gluu-radius-server/{0}{1}/super-gluu-radius-server-{0}{1}-distribution.zip'.format(app_versions['OX_VERSION'], app_versions['OX_GITVERISON'])), os.path.join(gluu_app_dir, 'gluu-radius-libs.zip'))
         download(os.path.join(maven_base, 'org/gluu/oxShibbolethStatic/{0}{1}/oxShibbolethStatic-{0}{1}.jar'.format(app_versions['OX_VERSION'], app_versions['OX_GITVERISON'])), os.path.join(gluu_app_dir,'shibboleth-idp.jar'))
