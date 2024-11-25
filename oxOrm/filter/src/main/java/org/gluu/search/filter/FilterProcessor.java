@@ -80,7 +80,6 @@ public class FilterProcessor {
 					Filter resultFilter = genericFilter.clone();
 					resultFilter.setFilters(null);
 					resultFilter.setAttributeName(filter.getAttributeName());
-					resultFilter.setAssertionValue(filter.getAssertionValue());
 					
 					return resultFilter;
 				}
