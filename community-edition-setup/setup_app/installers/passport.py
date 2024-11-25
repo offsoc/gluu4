@@ -23,7 +23,7 @@ class PassportInstaller(NodeInstaller):
         passport_version = Config.oxVersion.replace('-SNAPSHOT','').replace('.Final','')
         self.source_files = [
                 (os.path.join(Config.distGluuFolder, 'passport.tgz'), Config.maven_root + '/npm/passport/passport-{}.tgz'.format(passport_version)),
-                (os.path.join(Config.distGluuFolder, 'passport-node_modules.tar.gz'), Config.maven_root + '/npm/passport/passport-version_{}-node_modules.tar.gz'.format(passport_version))
+                (os.path.join(Config.distGluuFolder, 'passport-node_modules.tar.gz'), Config.maven_root + '/npm/passport/passport-{}-node_modules.tar.gz'.format(passport_version))
                 ]
 
         self.gluu_passport_base = os.path.join(self.node_base, 'passport')
