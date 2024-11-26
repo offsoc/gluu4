@@ -42,6 +42,7 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
       secrets:
         gluuJackrabbitAdminPass: admin # make sure the value is equal to the one in old values.yaml
     ```
+
 1.  In order for the upgrade job to complete, opendj image tag has to be `4.5.5-x`
 
 1.  Make sure that the completed `gluu-config` and `gluu-persistence` jobs are deleted. 
@@ -190,6 +191,7 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
               - -c
               - |
                 /tmp/mycustomldif.sh
+                /app/scripts/entrypoint.sh
               image: gluufederation/persistence:4.5.5-1
               volumeMounts:
                 - name: my-custom-ldif
@@ -235,6 +237,16 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
 1.  Make sure the cluster is functioning after migration.
 
 ## Known Issues
+
+1.  Since 4.2 uses the deprecated `v1beta1` API version. When upgrading, you'll receive the following error: 
+    `ensure CRDs are installed first, resource mapping not found for name: "gluu-nginx-ingress-casa" namespace: "" from "": no matches for kind "Ingress" in version "networking.k8s.io/v1beta1`.
+
+    You can follow [this](https://helm.sh/docs/topics/kubernetes_apis/#updating-api-versions-of-a-release-manifest) to resolve this Ingress API version incompatibility error. 
+    
+    You can rseolve it using the `mapkubeapis` helm plugin by running: 
+    
+    `helm mapkubeapis <gluu-release-name> -n <namespace>`.
+
 
 1.  During upgrade from >=4.2 to 4.5, if you didn't delete the jobs as instructed, the helm command throws the following message:
 
