@@ -225,12 +225,12 @@ public class PersonService implements Serializable, IPersonService {
 	}
 
 	private Filter buildFilterForList(String pattern) {
-		String[] targetArray = new String[] { pattern };
-		Filter uidFilter = Filter.createSubstringFilter(OxConstants.UID, null, targetArray, null);
-		Filter mailFilter = Filter.createSubstringFilter(OxTrustConstants.mail, null, targetArray, null);
-		Filter nameFilter = Filter.createSubstringFilter(OxTrustConstants.displayName, null, targetArray, null);
+		String[] targetArray = new String[] { pattern.toLowerCase() };
+		Filter uidFilter = Filter.createSubstringFilter(Filter.createLowercaseFilter(OxConstants.UID), null, targetArray, null);
+		Filter mailFilter = Filter.createSubstringFilter(Filter.createLowercaseFilter(OxTrustConstants.mail), null, targetArray, null);
+		Filter nameFilter = Filter.createSubstringFilter(Filter.createLowercaseFilter(OxTrustConstants.displayName), null, targetArray, null);
 
-		Filter snFilter = Filter.createSubstringFilter(OxTrustConstants.sn, null, targetArray, null);
+		Filter snFilter = Filter.createSubstringFilter(Filter.createLowercaseFilter(OxTrustConstants.sn), null, targetArray, null);
 		Filter searchFilter = Filter.createORFilter(uidFilter, mailFilter, nameFilter, snFilter);
 		return searchFilter;
 	}

@@ -14,6 +14,9 @@ from setup_app.installers.base import BaseInstaller
 
 class OxdInstaller(SetupUtils, BaseInstaller):
 
+
+
+
     def __init__(self):
         setattr(base.current_app, self.__class__.__name__, self)
         self.service_name = 'oxd-server'
@@ -23,6 +26,11 @@ class OxdInstaller(SetupUtils, BaseInstaller):
         self.install_type = InstallOption.OPTONAL
         self.install_var = 'installOxd'
         self.register_progess()
+
+        self.source_files = [
+                    (os.path.join(Config.distGluuFolder, 'oxd-server.zip'), os.path.join(Config.maven_root, 'maven4/org/gluu/oxd-server/{0}{1}/oxd-server-{0}{1}-distribution.zip'.format(base.current_app.app_info['OX_VERSION'], base.current_app.app_info['OX_GITVERISON']))),
+                    (os.path.join(Config.distGluuFolder, 'oxd-server-fips.zip'), os.path.join(Config.maven_root, 'maven4/org/gluu/oxd-server/{0}{1}/oxd-server-{0}{1}-distribution-bc-fips.zip'.format(base.current_app.app_info['OX_VERSION'], base.current_app.app_info['OX_GITVERISON']))),
+                    ]
 
         self.oxd_server_yml_fn = os.path.join(self.oxd_root, 'conf/oxd-server.yml')
         self.oxd_server_keystore_fn = os.path.join(self.oxd_root, 'conf/oxd-server.{}'.format(Config.default_store_type))
@@ -40,7 +48,7 @@ class OxdInstaller(SetupUtils, BaseInstaller):
 
     def install(self):
         self.logIt("Installing {}".format(self.service_name.title()), pbar=self.service_name)
-        self.run(['tar', '-zxf', Config.oxd_package, '--no-same-owner', '--strip-components=1', '-C', self.oxd_root])
+        self.extract_files()
 
         oxd_user = 'oxd-server' if Config.profile == SetupProfiles.DISA_STIG else Config.jetty_user
         Config.templateRenderingDict['service_user'] = oxd_user 
@@ -97,6 +105,12 @@ class OxdInstaller(SetupUtils, BaseInstaller):
         self.configure_extra_libs()
 
         self.enable()
+
+    def extract_files(self):
+        oxd_zip_fn = self.source_files[1][0] if Config.profile == SetupProfiles.DISA_STIG else self.source_files[0][0]
+        base.extract_subdir(oxd_zip_fn, '', self.oxd_root, par_dir='')
+        base.extract_file(base.current_app.gluu_zip, 'oxd/debian/oxd-server', os.path.join(self.oxd_root, 'bin'))
+        os.makedirs(os.path.join(self.oxd_root, 'data'))
 
     def get_yaml_config(self):
         yml_str = self.readFile(self.oxd_server_yml_fn)

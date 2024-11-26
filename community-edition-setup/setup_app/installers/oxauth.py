@@ -20,7 +20,7 @@ class OxauthInstaller(JettyInstaller):
         self.register_progess()
 
         self.source_files = [
-                    (os.path.join(Config.distGluuFolder, 'oxauth.war'), Config.maven_root + '/maven/org/gluu/oxauth-server/%s/oxauth-server-%s.war' % (Config.oxVersion, Config.oxVersion)),
+                    (os.path.join(Config.distGluuFolder, 'oxauth.war'), Config.maven_root + '/maven4/org/gluu/oxauth-server/%s/oxauth-server-%s.war' % (Config.oxVersion, Config.oxVersion)),
                     ]
 
         self.templates_folder = os.path.join(Config.templateFolder, self.service_name)
