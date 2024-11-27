@@ -7,9 +7,8 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
   Assuming Gluu 4.2 is already installed and running, do the following steps:
 
   1. scale down the OpenDJ replicas to 1 pod.
-  1. Backup the persistence volumes as the process is not reversible.
-  1. backup volumes (the upgrade process is irreversible)
-  1. backup existing `values.yaml` as `values-4.2.yaml`
+  1. Backup the persistence volumes as the upgrade process is not reversible.
+  1. Backup the existing `values.yaml` used in Gluu 4.2 installation as `values-4.2.yaml`.
 
   Additional steps are required if using LDAP with multiCluster enabled(for example WEST and EAST regions):
 
@@ -24,8 +23,6 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
 1.  Change the ownership of the Opendj filesystem: 
 
     `kubectl -n <namespace> exec <opendj-pod-name> -- chown -R 1000:root /opt/opendj`
-
-
 
 
 1.  Edit the manifest of the current OpenDJ statefulset:
@@ -249,7 +246,12 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
         
 ### Step 3: switching from OpenDJ to Postgres
 
-1.  Switch the persistence from Open to Postgres by adding the following to the existing `values.yaml`:
+
+1.  Get new `values.yaml` for Gluu 4.5 installation.
+
+1.  Compare `values-4.2.yaml` with the new `values.yaml`, and then modify `values.yaml`
+
+1.  Switch the persistence from Opendj to Postgres by adding the following to the existing `values.yaml`:
 
     ```yaml
     global:
