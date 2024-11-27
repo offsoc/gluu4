@@ -4,7 +4,17 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
 
 ## Prerequisites
 
-   Gluu Kubernetes (CN) >=4.2 is already installed.
+  Assuming Gluu 4.2 is already installed and running, do the following steps:
+
+  1. scale down the OpenDJ replicas to 1 pod.
+  1. Backup the persistence volumes as the process is not reversible.
+  1. backup volumes (the upgrade process is irreversible)
+
+  Additional steps are required if using LDAP with multiCluster enabled(for example WEST and EAST regions):
+
+  1. upgrade only in 1 region, e.g. WEST
+  1. disable Opendj replication between WEST and EAST
+  1. disable traffic to WEST
 
 ## How to upgrade and migrate
 
@@ -14,7 +24,7 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
 
     `kubectl -n <namespace> exec <opendj-pod-name> -- chown -R 1000:root /opt/opendj`
 
-1.  Backup the persistence entries as the process is not reversible.
+
 
 
 1.  Edit the manifest of the current OpenDJ statefulset:
