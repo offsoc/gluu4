@@ -43,7 +43,21 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
         gluuJackrabbitAdminPass: admin # make sure the value is equal to the one in old values.yaml
     ```
 
-1.  In order for the upgrade job to complete, opendj image tag has to be `4.5.5-x`
+1.  Edit the manifest of the current OpenDJ statefulset:
+    `kubectl edit sts <opendj-sts-name> -n <namespace>` 
+
+    Upgrade the image tag to `4.5.5-x` and add a new env variable:
+
+    ```
+    containers:
+      - image: gluufederation/opendj:4.5.5-1
+        env:
+          - name: GLUU_LDAP_AUTO_REPLICATE
+            value: "false"
+    ```
+
+    Save the changes and wait until the opendj pod gets terminated, re-deployed, and running.
+
 
 1.  Make sure that the completed `gluu-config` and `gluu-persistence` jobs are deleted. 
 
