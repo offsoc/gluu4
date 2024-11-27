@@ -1,47 +1,21 @@
 # Overview
 
-This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 LDAP to 4.5 PostgreSQL.
+This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 LDAP to 4.5 PostgreSQL.
 
 ## Prerequisites
 
    Gluu Kubernetes (CN) >=4.2 is already installed.
 
-## Upgrading Installation
+## How to upgrade and migrate
 
-### Step 1
+### Step 1: Upgrading Gluu 4.2 to 4.5 with OpenDJ/LDAP as persistence
 
-1.  Make sure the ownership of the opendj volume is `1000:1000`. For example, you can run:
-   `chown -R 1000:1000 /path/of/volume`
-1.  Backup persistence entries as the process is not reversible.
+1.  Change the ownership of the Opendj filesystem: 
 
-1.  Backup existing `values.yaml` (used in Gluu 4.2 installation) as `values-4.2.yaml`.
+    `kubectl -n <namespace> exec <opendj-pod-name> -- chown -R 1000:root /opt/opendj`
 
-1.  Get new `values.yaml` for Gluu 4.5 installation.
+1.  Backup the persistence entries as the process is not reversible.
 
-1.  Compare `values-4.2.yaml` with the new `values.yaml`, and then modify `values.yaml`:
-
-    ```yaml
-    global:
-      jackrabbit:
-        enabled: true
-      upgrade:
-        enabled: true
-        image:
-          tag: 4.5.5-1
-        sourceVersion: "4.2" #current chart version
-        targetVersion: "4.5"
-        pullSecrets:
-          - name: regcred
-      gluuPersistenceType: ldap
-      
-    config:
-      configmap:
-        gluuDocumentStoreType: JCA
-        
-    jackrabbit:
-      secrets:
-        gluuJackrabbitAdminPass: admin # make sure the value is equal to the one in old values.yaml
-    ```
 
 1.  Edit the manifest of the current OpenDJ statefulset:
     `kubectl edit sts <opendj-sts-name> -n <namespace>` 
@@ -61,11 +35,47 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
 
 1.  Make sure that the completed `gluu-config` and `gluu-persistence` jobs are deleted. 
 
-1.  Run `helm upgrade <gluu-release-name> gluu/gluu -n <namespace> -f values.yaml`.
+1.  Create `gluu-upgrade-42.yaml` file:
+    ```
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: gluu-upgrade-42
+    spec:
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"                  
+        spec:
+          restartPolicy: Never
+          imagePullSecrets:
+            - name: regcred
+          volumes: []
+          containers:
+            - name: upgrade-42
+              image: gluufederation/upgrade:4.5.5-1
+              volumeMounts: []
+              envFrom:
+                - configMapRef:
+                    name: gluu-config-cm # adjust the name according to your setup
+              env: []
+              args:
+                - --source=4.2
+                - --target=4.5    
+    ```
 
-1.  Make sure the cluster is functioning after the upgrade.
+1.  Apply the job to upgrade the OpenDJ entries:
 
-### Step 2
+    `kubectl -n <namespace> apply -f gluu-upgrade-42.yaml`
+
+1.  Wait until the job is completed succesfully, and then delete the job:
+
+    `kubectl -n <namespace> delete -f gluu-upgrade-42.yaml`
+
+
+1.  Make sure the cluster functions after the upgrade job.
+
+### Step 2: migrate the OpenDJ entries to Postgres
 
 1.  Export entries for each tree (`o=gluu`, `o=site`, `o=metric`) as `.ldif` file.
 
@@ -99,7 +109,7 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
     
 1.  Migrating entries from `.ldif` files may take a while, hence we will be migrating them offline using a separate k8s job.
 
-    1.  Create `sql_password` file to store password for Postgres user and save it into secret:
+    1.  Create a `sql_password` file to store the password for Postgres user and save it into a secret:
 
         ```
         kubectl -n <namespace> create secret generic offline-sql-pass --from-file=sql_password
@@ -226,29 +236,31 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
       kubectl -n <namespace> delete job offline-persistence-load
       ```
         
-### Step 3
+### Step 3: switching from OpenDJ to Postgres
 
-1.  Switch the persistence by adding the following to the existing `values.yaml`:
+1.  Switch the persistence from Open to Postgres by adding the following to the existing `values.yaml`:
 
     ```yaml
     global:
       gluuPersistenceType: sql
       upgrade:
         enabled: false
+      opendj:
+        enabled: false  
     config:
       configmap:
-        cnSqlDbName: gluu
-        cnSqlDbPort: 5432
+        cnSqlDbName: gluu # adjust according to your setup
+        cnSqlDbPort: 5432 # adjust according to your setup
         cnSqlDbDialect: pgsql
-        cnSqlDbHost: postgresql.postgres.svc
-        cnSqlDbUser: gluu
+        cnSqlDbHost: postgresql.postgres.svc # adjust according to your setup
+        cnSqlDbUser: gluu # adjust according to your setup
         cnSqlDbTimezone: UTC
-        cnSqldbUserPassword: <postgres-user-password>
+        cnSqldbUserPassword: <postgres-user-password> # adjust according to your setup
     ```
     
 1.  Run `helm upgrade <gluu-release-name> gluu/gluu -n <namespace> -f values.yaml`.
 
-1.  Make sure the cluster is functioning after migration.
+1.  Make sure the cluster is functioning after the migration.
 
 ## Known Issues
 
@@ -257,12 +269,12 @@ This documentation demonstrates how to upgrade a kubernetes setup of Gluu >=4.2 
 
     You can follow [this](https://helm.sh/docs/topics/kubernetes_apis/#updating-api-versions-of-a-release-manifest) to resolve this Ingress API version incompatibility error. 
     
-    You can rseolve it using the `mapkubeapis` helm plugin by running: 
+    You can resolve it using the `mapkubeapis` helm plugin by running the following: 
     
     `helm mapkubeapis <gluu-release-name> -n <namespace>`.
 
 
-1.  During upgrade from >=4.2 to 4.5, if you didn't delete the jobs as instructed, the helm command throws the following message:
+1.  During the upgrade from >=4.2 to 4.5, if you didn't delete the jobs as instructed, the helm command throws the following message:
 
     ```
     Error: UPGRADE FAILED: cannot patch "gluu-config" with kind Job: Job.batch "gluu-config" is invalid: spec.template: 
