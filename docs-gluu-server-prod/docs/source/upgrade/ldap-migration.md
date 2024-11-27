@@ -9,6 +9,7 @@ This documentation demonstrates how to upgrade a Kubernetes setup of Gluu >=4.2 
   1. scale down the OpenDJ replicas to 1 pod.
   1. Backup the persistence volumes as the process is not reversible.
   1. backup volumes (the upgrade process is irreversible)
+  1. backup existing `values.yaml` as `values-4.2.yaml`
 
   Additional steps are required if using LDAP with multiCluster enabled(for example WEST and EAST regions):
 
