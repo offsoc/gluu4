@@ -11,8 +11,7 @@ keywords:
   - API
 home: https://gluu.org/docs/oxd
 sources:
-  - https://github.com/GluuFederation/docker-oxd
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxd-server
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

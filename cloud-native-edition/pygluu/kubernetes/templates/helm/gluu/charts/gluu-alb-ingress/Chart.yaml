@@ -13,7 +13,7 @@ home: https://gluu.org/docs/gluu-server
 sources:
   - https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
   - https://kubernetes.io/docs/concepts/services-networking/ingress/
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/alb
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

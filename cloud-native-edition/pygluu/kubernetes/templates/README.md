@@ -170,7 +170,7 @@ Please calculate the minimum required resources as per services deployed. The fo
     
     ### Quickstart
     
-    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+    1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/gluu4/releases). Older versions are located [here](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
     
     1. **Optional:** If using couchbase as the persistence backend. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
     
@@ -207,7 +207,7 @@ Please calculate the minimum required resources as per services deployed. The fo
     
     1.  **Optional:** If using couchbase as the persistence backend.
         
-        1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
+        1. Download [`pygluu-kubernetes.pyz`](https://github.com/GluuFederation/gluu4/releases). Older versions are located [here](https://github.com/GluuFederation/cloud-native-edition/releases). This package can be built [manually](#build-pygluu-kubernetespyz-manually).
         
         1. Download the couchbase [kubernetes](https://www.couchbase.com/downloads) operator package for linux and place it in the same directory as `pygluu-kubernetes.pyz`
     

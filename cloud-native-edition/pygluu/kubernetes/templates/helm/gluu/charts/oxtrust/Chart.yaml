@@ -11,8 +11,7 @@ keywords:
   - Admin
 home: https://gluu.org/docs/gluu-server
 sources:
-  - https://github.com/GluuFederation/docker-oxtrust
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxtrust
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

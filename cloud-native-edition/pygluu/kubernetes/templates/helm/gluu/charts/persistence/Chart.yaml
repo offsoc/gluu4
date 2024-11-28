@@ -10,8 +10,7 @@ keywords:
   - persistence prep
 home: https://gluu.org/docs/gluu-server
 sources:
-  - https://github.com/GluuFederation/docker-persistence
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/persistence
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

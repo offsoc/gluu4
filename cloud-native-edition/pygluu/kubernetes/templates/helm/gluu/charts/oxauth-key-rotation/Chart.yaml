@@ -11,7 +11,7 @@ keywords:
 home: https://gluu.org/docs/gluu-server
 sources:
   - https://github.com/GluuFederation/docker-certmanager
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.3/pygluu/kubernetes/templates/helm/gluu/charts/oxauth-key-rotationn
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org

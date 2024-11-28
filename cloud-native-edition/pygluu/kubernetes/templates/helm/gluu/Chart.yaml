@@ -41,6 +41,7 @@ home: https://www.gluu.org
 sources:
   - https://gluu.org/docs/gluu-server
   - https://github.com/GluuFederation/cloud-native-edition
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
 - name: moabu
   email: support@gluu.org

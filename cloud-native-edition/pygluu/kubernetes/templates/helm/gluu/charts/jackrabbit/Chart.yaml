@@ -12,9 +12,8 @@ keywords:
 home: https://gluu.org/docs/gluu-server/installation-guide/install-kubernetes/#working-with-jackrabbit
 sources:
   - https://gluu.org/docs/gluu-server/installation-guide/install-kubernetes/#working-with-jackrabbit
-  - https://github.com/GluuFederation/docker-jackrabbit
   - https://jackrabbit.apache.org/jcr/index.html
-  - https://github.com/GluuFederation/cloud-native-edition/tree/4.4/pygluu/kubernetes/templates/helm/gluu/charts/jackrabbit
+  - https://github.com/GluuFederation/gluu4/tree/4.5/cloud-native-edition
 maintainers:
   - name: Mohammad Abudayyeh
     email: support@gluu.org
