@@ -5,3 +5,4 @@ usr/bin/*		/usr/bin/
 usr/sbin/*		/usr/sbin/
 opt/dist/*		/opt/dist/
 opt/gluu/*		/opt/gluu/
+install/*         	/install/
