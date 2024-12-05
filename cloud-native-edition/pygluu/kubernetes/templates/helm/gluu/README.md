@@ -1,6 +1,6 @@
 # gluu
 
-![Version: 1.8.39](https://img.shields.io/badge/Version-1.8.39-informational?style=flat-square) ![AppVersion: 4.5.6](https://img.shields.io/badge/AppVersion-4.5.6-informational?style=flat-square)
+![Version: 4.5.6](https://img.shields.io/badge/Version-4.5.6-informational?style=flat-square) ![AppVersion: 4.5.6](https://img.shields.io/badge/AppVersion-4.5.6-informational?style=flat-square)
 
 Gluu Access and Identity Mangement
 
@@ -24,23 +24,23 @@ Kubernetes: `>=v1.22.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | casa | 1.8.39 |
-|  | config | 1.8.39 |
-|  | cr-rotate | 1.8.39 |
-|  | fido2 | 1.8.39 |
-|  | gluu-alb-ingress | 1.8.39 |
-|  | gluu-istio-ingress | 1.8.39 |
-|  | jackrabbit | 1.8.39 |
-|  | nginx-ingress | 1.8.39 |
-|  | opendj | 1.8.39 |
-|  | oxauth | 1.8.39 |
-|  | oxauth-key-rotation | 1.8.39 |
-|  | oxd-server | 1.8.39 |
-|  | oxpassport | 1.8.39 |
-|  | oxshibboleth | 1.8.39 |
-|  | oxtrust | 1.8.39 |
-|  | persistence | 1.8.39 |
-|  | scim | 1.8.39 |
+|  | casa | 4.5.6 |
+|  | config | 4.5.6 |
+|  | cr-rotate | 4.5.6 |
+|  | fido2 | 4.5.6 |
+|  | gluu-alb-ingress | 4.5.6 |
+|  | gluu-istio-ingress | 4.5.6 |
+|  | jackrabbit | 4.5.6 |
+|  | nginx-ingress | 4.5.6 |
+|  | opendj | 4.5.6 |
+|  | oxauth | 4.5.6 |
+|  | oxauth-key-rotation | 4.5.6 |
+|  | oxd-server | 4.5.6 |
+|  | oxpassport | 4.5.6 |
+|  | oxshibboleth | 4.5.6 |
+|  | oxtrust | 4.5.6 |
+|  | persistence | 4.5.6 |
+|  | scim | 4.5.6 |
 
 ## Values
 
