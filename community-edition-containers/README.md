@@ -17,6 +17,7 @@ The compatibility between `pygluu-compose` and Gluu Server is listed below:
 
 | pygluu-compose    | Gluu Server   |
 |:-----------------:|:-------------:|
+| 1.20.x            | 4.5.6         |
 | 1.19.x            | 4.5.5         |
 | 1.18.x            | 4.5.4         |
 | 1.17.x            | 4.5.3         |
@@ -34,3 +35,5 @@ The compatibility between `pygluu-compose` and Gluu Server is listed below:
 | 1.1.1             | 4.1.3         |
 | 1.0.1 - 1.1.0     | 4.1.1         |
 | 1.0.0             | 4.1.0         |
+
+For versions below 1.20.x, source code and releases are available at https://github.com/GluuFederation/cloud-native-edition
