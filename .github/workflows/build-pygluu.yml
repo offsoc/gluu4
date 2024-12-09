@@ -37,6 +37,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
+      working-directory: ./cloud-native-edition
         pip3 install flake8
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -44,6 +45,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Build pygluu
+      working-directory: ./cloud-native-edition
       run: |
         sudo apt-get update || brew install jq
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
