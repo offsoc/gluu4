@@ -47,6 +47,9 @@ documentation and administrative guide.
 - [#2444](https://github.com/GluuFederation/oxTrust/issues/2444) fix(oxTrust): User searching is case sensitive for Postgres 
 - [#35](https://github.com/GluuFederation/gluu4/pull/35) fix(setup): fix passport install
 - [#54](https://github.com/GluuFederation/gluu4/pull/54) fix(setup): authorization_challenge scope has wrong DN
+- [#2437](https://github.com/GluuFederation/oxTrust/pull/2437) feat(oxtrust): add allowwildcardredirecturi on oxauth config ui
+- [#2442](https://github.com/GluuFederation/oxTrust/pull/2442) fix: xml encode entityId in shibboleth saml templates
+- [1cf35b49855208d9db020e84347c54eac0789eb9](https://github.com/GluuFederation/casa/commit/1cf35b49855208d9db020e84347c54eac0789eb9) chore: udpdate bc libs
 
 ## 4.5.5 Fixes / Enhancements
 
