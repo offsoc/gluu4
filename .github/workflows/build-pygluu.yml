@@ -50,6 +50,7 @@ jobs:
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
         pip3 install shiv
         make zipapp
+        mv pygluu-kubernetes.pyz ../pygluu-kubernetes.pyz
 
     - name: Get project
       id: project
@@ -68,6 +69,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.MOWORKFLOWTOKEN }}
-        file: ./cloud-native-edition/${{ matrix.artifact_name }}
+        file: ${{ matrix.artifact_name }}
         asset_name: ${{ matrix.asset_name }}
         tag: ${{ steps.previoustag.outputs.tag }}
