@@ -5,9 +5,10 @@ on:
     tags:
       - '*'
   workflow_dispatch:
-
 jobs:
   publish:
+    permissions:
+      contents: write
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -50,7 +51,6 @@ jobs:
         sudo apt-get install build-essential || echo "Maybe im on macor OS"
         pip3 install shiv
         make zipapp
-        mv pygluu-kubernetes.pyz ../pygluu-kubernetes.pyz
 
     - name: Get project
       id: project
@@ -65,10 +65,14 @@ jobs:
         echo "${{ steps.previoustag.outputs.tag }}"
 
 
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.MOWORKFLOWTOKEN }}
-        file: ${{ matrix.artifact_name }}
-        asset_name: ${{ matrix.asset_name }}
-        tag: ${{ steps.previoustag.outputs.tag }}
+    - name: Generate sha256sum
+      id: sha
+      working-directory: ./cloud-native-edition
+      run: |
+        TAG=$(echo ${{ github.event.ref }} | cut -d '/' -f 3)
+        VERSION="${TAG}"
+        cd ${{ github.workspace }}/jans-cedarling/target/wheels
+        mv ${{ matrix.artifact_name }} > ${{ matrix.asset_name }}
+        sha256sum ${{ matrix.asset_name }} > ${{ matrix.asset_name }}.sha256sum
+        echo "${{ secrets.MOAUTO_WORKFLOW_TOKEN }}" | gh auth login --with-token
+        gh release upload "${VERSION}" *.pyz *.sha256sum
