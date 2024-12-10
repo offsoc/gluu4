@@ -71,7 +71,7 @@ jobs:
       run: |
         TAG=$(echo ${{ github.event.ref }} | cut -d '/' -f 3)
         VERSION="${TAG}"
-        mv ${{ matrix.artifact_name }} > ${{ matrix.asset_name }}
+        mv ${{ matrix.artifact_name }} ${{ matrix.asset_name }}
         sha256sum ${{ matrix.asset_name }} > ${{ matrix.asset_name }}.sha256sum
         echo "${{ secrets.MOAUTO_WORKFLOW_TOKEN }}" | gh auth login --with-token
         gh release upload "${VERSION}" *.pyz *.sha256sum
