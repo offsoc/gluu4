@@ -23,7 +23,7 @@
     * Download the upgrade script
     
     ```
-    wget https://raw.githubusercontent.com/GluuFederation/community-edition-package/master/update/4.5.0/upg4xto450.py
+    wget https://raw.githubusercontent.com/GluuFederation/gluu4/refs/heads/4.5/community-edition-package/update/4.5.0/upg4xto450.py
     ```
     
     * Execute the script:

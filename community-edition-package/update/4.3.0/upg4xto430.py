@@ -812,7 +812,7 @@ class GluuUpdater:
                     ('https://corretto.aws/downloads/resources/{0}/amazon-corretto-{0}-linux-x64.tar.gz'.format(self.corretto_version), os.path.join(self.app_dir, 'amazon-corretto-11-x64-linux-jdk.tar.gz')),
                     ('https://repo1.maven.org/maven2/org/python/jython-installer/{0}/jython-installer-{0}.jar'.format(self.jython_version), os.path.join(self.app_dir, 'jython-installer-{}.jar'.format(self.jython_version))),
                     ('https://nodejs.org/dist/{0}/node-{0}-linux-x64.tar.xz'.format(self.node_version), os.path.join(self.app_dir, 'node-{0}-linux-x64.tar.xz'.format(self.node_version))),
-                    ('https://raw.githubusercontent.com/GluuFederation/gluu-snap/master/facter/facter', '/usr/bin/facter'),
+                    ('https://raw.githubusercontent.com/JanssenProject/jans/refs/heads/main/jans-linux-setup/jans_setup/static/scripts/facter', '/usr/bin/facter'),
                     ('https://ox.gluu.org/maven/org/gluufederation/opendj/opendj-server-legacy/{0}/opendj-server-legacy-{0}.zip'.format(self.opendj_version), os.path.join(self.app_dir, 'opendj-server-{}.zip'.format(self.opendj_version))),
                     ('https://ox.gluu.org/maven/org/gluu/oxauth-client/{0}{1}/oxauth-client-{0}{1}-jar-with-dependencies.jar'.format(self.up_version, self.build_tag), os.path.join(self.app_dir, 'oxauth-client-jar-with-dependencies.jar')),
                     ]

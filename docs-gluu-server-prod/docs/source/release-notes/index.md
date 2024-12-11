@@ -35,6 +35,22 @@ documentation and administrative guide.
 - FluentD 3.5
 - Redis
 
+## 4.5.6 Fixes / Enhancements
+
+- [#1](https://github.com/GluuFederation/gluu4/issues/1) feat(oxauth): add first party native authn support
+- [#4](https://github.com/GluuFederation/gluu4/issues/4) fix(oxtrust): change cert to idpCert field
+- [#8](https://github.com/GluuFederation/gluu4/issues/8) feat(oxAuth): uid should be case insensetive in scenarion with AD user authentication
+- [#16](https://github.com/GluuFederation/gluu4/pull/16) fix: shibboleth multivalue attributes don't work properly except with ldap storage
+- [#19](https://github.com/GluuFederation/gluu4/pull/19)fix(jans-core): fix apidocs
+- [#17](https://github.com/GluuFederation/gluu4/issues/17) fix(oxtrust): trust relationship is not updating with REST call
+- [#2439](https://github.com/GluuFederation/oxTrust/issues/2439) bug(oxtrust): failed to remove memberof attribute from user entry if DB is PostgreSQL
+- [#2444](https://github.com/GluuFederation/oxTrust/issues/2444) fix(oxTrust): User searching is case sensitive for Postgres 
+- [#35](https://github.com/GluuFederation/gluu4/pull/35) fix(setup): fix passport install
+- [#54](https://github.com/GluuFederation/gluu4/pull/54) fix(setup): authorization_challenge scope has wrong DN
+- [#2437](https://github.com/GluuFederation/oxTrust/pull/2437) feat(oxtrust): add allowwildcardredirecturi on oxauth config ui
+- [#2442](https://github.com/GluuFederation/oxTrust/pull/2442) fix: xml encode entityId in shibboleth saml templates
+- [1cf35b49855208d9db020e84347c54eac0789eb9](https://github.com/GluuFederation/casa/commit/1cf35b49855208d9db020e84347c54eac0789eb9) chore: udpdate bc libs
+
 ## 4.5.5 Fixes / Enhancements
 
 ### [GluuFederation/oxAuth](https://github.com/GluuFederation/oxAuth/issues?utf8=%3F&q=is:issue+milestone:4.5+) 

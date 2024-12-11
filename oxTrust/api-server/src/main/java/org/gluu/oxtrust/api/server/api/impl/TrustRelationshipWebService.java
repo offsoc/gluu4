@@ -814,12 +814,17 @@ public class TrustRelationshipWebService extends BaseWebResource {
             // Admin doesn't provide new file. Check if we already has this file
             String filePath = shibboleth3ConfService.getSpMetadataFilePath(spMetadataFileName);
             if (filePath == null) {
+                logger.debug("The trust relationship {} has an invalid Metadata file storage path", trustRelationship.getInum());
                 return false;
             }
 
-            File file = new File(filePath);
-            if (!file.exists()) {
-                return false;
+            if (shibboleth3ConfService.isLocalDocumentStoreType()) {
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    logger.debug("The trust relationship {} metadata used local storage but the SP metadata file `{}` was not found",
+                            trustRelationship.getInum(),filePath);
+                    return false;
+                }
             }
 
             // File already exist

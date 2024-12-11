@@ -5,7 +5,7 @@
 	<groupId>org.gluu</groupId>
 	<artifactId>oxcore</artifactId>
 	<packaging>pom</packaging>
-	<version>4.5.6-SNAPSHOT</version>
+	<version>4.5.7-SNAPSHOT</version>
 	<name>oxCore</name>
 	<url>https://www.gluu.org</url>
 
@@ -51,7 +51,7 @@
 			<dependency>
 				<groupId>org.gluu</groupId>
 				<artifactId>gluu-core-bom</artifactId>
-				<version>4.5.6-SNAPSHOT</version>
+				<version>4.5.7-SNAPSHOT</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
@@ -164,6 +164,7 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
 						<failOnError>false</failOnError>
+						<source>8</source> 
 					</configuration>
 				</plugin>
 			</plugins>
@@ -201,7 +202,7 @@
         <repository>
             <id>gluu</id>
             <name>Gluu project repository</name>
-            <url>https://maven.gluu.org/maven</url>
+            <url>https://maven.gluu.org/maven4</url>
         </repository>
 	<repository>
 		<id>shib-release</id>

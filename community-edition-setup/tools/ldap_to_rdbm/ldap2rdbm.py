@@ -49,6 +49,8 @@ from setup_app.installers.gluu import GluuInstaller
 from setup_app.utils.ldif_utils import myLdifParser
 from setup_app.installers.opendj import OpenDjInstaller
 from setup_app.installers.rdbm import RDBMInstaller
+from setup_app.installers.saml import SamlInstaller
+
 from setup_app.pylib.ldif4.ldif import LDIFWriter
 from ldap3.utils import dn as dnutils
 
@@ -63,6 +65,7 @@ Config.installed_instance = True
 openDjInstaller = OpenDjInstaller()
 rdbmInstaller = RDBMInstaller()
 propertiesUtils = PropertiesUtils()
+samlInstaller = SamlInstaller()
 
 parser = myLdifParser("/opt/opendj/config/schema/77-customAttributes.ldif")
 parser.parse()
@@ -224,6 +227,11 @@ for ldif_fn in (current_ldif_fn, static_ldif_fn):
 
 print("Creating indexes...")
 rdbmInstaller.create_indexes()
+
+if samlInstaller.installed():
+    print("Writing saml persistence configuration")
+    samlInstaller.saml_persist_configurations()
+    samlInstaller.run(['chown', 'jetty:gluu', os.path.join(samlInstaller.idp3ConfFolder, 'datasource.properties')])
 
 print("Writing Gluu config properties")
 rdbmInstaller.rdbmProperties()

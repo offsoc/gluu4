@@ -13,15 +13,15 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <plugin.id>account-linking</plugin.id>
-        <plugin.version>4.5.6-SNAPSHOT</plugin.version>
-        <ox.version>4.5.6-SNAPSHOT</ox.version>
+        <plugin.version>4.5.7-SNAPSHOT</plugin.version>
+        <ox.version>4.5.7-SNAPSHOT</ox.version>
     </properties>
 
     <repositories>
         <repository>
             <id>gluu</id>
             <name>Gluu repository</name>
-            <url>https://maven.gluu.org/maven</url>
+            <url>https://maven.gluu.org/maven4</url>
         </repository>
     </repositories>
 
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.gluu</groupId>
             <artifactId>casa-shared</artifactId>
-            <version>4.5.6-SNAPSHOT</version>
+            <version>4.5.7-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

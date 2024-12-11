@@ -102,7 +102,7 @@ Please see following snippet below:
             self.createError(context, "username_invalid")
             return False
 
-        isUserActive = StringUtils.equals(user.getStatus(), "ACTIVE")
+        isUserActive = StringUtils.equalsIgnoreCase(user.getStatus(), "ACTIVE")
         if not isUserActive:
             print "User is not active"
             self.createError(context, "username_inactive")

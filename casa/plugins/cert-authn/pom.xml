@@ -13,14 +13,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <plugin.id>cert-authn</plugin.id>
-        <plugin.version>4.5.6-SNAPSHOT</plugin.version>
+        <plugin.version>4.5.7-SNAPSHOT</plugin.version>
     </properties>
 
     <repositories>
         <repository>
             <id>gluu</id>
             <name>Gluu repository</name>
-            <url>https://maven.gluu.org/maven</url>
+            <url>https://maven.gluu.org/maven4</url>
         </repository>
     </repositories>
 

@@ -132,7 +132,7 @@ objectClass: top
 oxAttributes: {"spontaneousClientId":"","spontaneousClientScopes":[],"showInConfigurationEndpoint":true}
 oxScopeType: openid
 
-dn: inum=6D92,ou=scopes,o=jans
+dn: inum=6D92,ou=scopes,o=gluu
 description: Authorization Challenge
 displayName: authorization_challenge
 inum: 6D92

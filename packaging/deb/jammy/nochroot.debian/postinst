@@ -1,3 +1,2 @@
 #!/bin/bash
 source /etc/profile.d/gluu-server.sh
-python3 /opt/gluu/bin/install.py
