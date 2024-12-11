@@ -13,12 +13,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
             name: ubuntu
-          - os: macos-latest
-            name: macos
+          #- os: macos-latest
+          #  name: macos
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -51,10 +51,10 @@ jobs:
         make zipapp
 
     - name: Build pygluu-compose
-      working-directory: ./community-edition-containers
+      working-directory: ./community-edition-containers/pygluu-compose
       run: |
         make zipapp
-        mv pygluu-compose.pyz ../cloud-native-edition/pygluu-compose.pyz
+        mv pygluu-compose.pyz ../../cloud-native-edition/pygluu-compose.pyz
 
     - name: Get project
       id: project
