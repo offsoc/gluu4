@@ -86,6 +86,7 @@ public class ShibOxAuthAuthServlet extends HttpServlet {
     private final String OXAUTH_PARAM_ENTITY_ID = "entityId";
     private final String OXAUTH_PARAM_ISSUER_ID = "issuerId";
     private final String OXAUTH_PARAM_EXTRA_PARAMS = "extraParameters";
+    private final String FORCE_AUTHN_REQUEST_PARAM = "forceAuthn_";
     private final String OXAUTH_ATTRIBIUTE_SEND_END_SESSION_REQUEST = "sendEndSession";
 
     public final static String OXAUTH_ACR_USED = "acr_used";
@@ -173,7 +174,21 @@ public class ShibOxAuthAuthServlet extends HttpServlet {
             final String flowExecutionKey = ExternalAuthentication.startExternalAuthentication(externalRequest);
 
             // Get external authentication properties
-            final boolean force = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.FORCE_AUTHN_PARAM).toString());
+            boolean force = Boolean.parseBoolean(request.getAttribute(ExternalAuthentication.FORCE_AUTHN_PARAM).toString());
+            //override this if the forceAuthn_ request parameter is true
+            final ProfileRequestContext prContext = ExternalAuthentication.getProfileRequestContext(flowExecutionKey,request);
+            final GluuScratchContext gsContext = prContext.getSubcontext(GluuScratchContext.class);
+            if(gsContext != null && gsContext.hasExtraHttpParameter(FORCE_AUTHN_REQUEST_PARAM)) {
+                LOG.info("Force authn parameter");
+                final String forceAuthnParamValue = gsContext.getExtraHttpParameter(FORCE_AUTHN_REQUEST_PARAM);
+                if(forceAuthnParamValue.equals("true")) {
+                    force = true;
+                    LOG.info("Force authn parameter is true.");
+                }
+            }else {
+                LOG.info("No force authn parameter");
+            }
+            
 
             // It's an authentication
             if (!authorizationResponse) {

@@ -70,5 +70,14 @@ public final class GluuScratchContext extends BaseContext {
             return null;
         }
     }
-    
+
+    public boolean hasExtraHttpParameter(final String http_param_name) {
+
+        return extraHttpParameters.get(http_param_name) != null;
+    }
+
+    public String getExtraHttpParameter(final String http_param_name) {
+
+        return extraHttpParameters.get(http_param_name);
+    }
 }
