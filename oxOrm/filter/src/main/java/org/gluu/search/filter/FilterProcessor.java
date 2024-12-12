@@ -45,6 +45,9 @@ public class FilterProcessor {
 
 			Filter resultFilter = new Filter(type, resultFilters.toArray(new Filter[0]));
 			resultFilter.setAssertionValue(genericFilter.getAssertionValue());
+			resultFilter.setSubInitial(genericFilter.getSubInitial());
+			resultFilter.setSubAny(genericFilter.getSubAny());
+			resultFilter.setSubFinal(genericFilter.getSubFinal());
 
 			return resultFilter;
 		}
