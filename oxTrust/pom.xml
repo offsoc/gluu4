@@ -30,7 +30,7 @@
 
 		<antlr4.version>4.7.1</antlr4.version>
 
-		<jetty.version>9.4.40.v20210413</jetty.version>
+		<jetty.version>11.0.24</jetty.version>
 
 		<arquillian.version>1.4.0.Final</arquillian.version>
 		<arquillian.rest.version>1.0.0.Alpha4</arquillian.rest.version>
@@ -313,7 +313,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-configuration</groupId>
